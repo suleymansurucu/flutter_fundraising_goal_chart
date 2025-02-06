@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_fundraising_goal_chart/views/auth/sing_in.dart';
+import 'package:flutter_fundraising_goal_chart/views/donation/donation_entry_page.dart';
+import 'package:flutter_fundraising_goal_chart/views/fundraising/fundraising_setup_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +34,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: SingInPage(),
     );
   }
 }
