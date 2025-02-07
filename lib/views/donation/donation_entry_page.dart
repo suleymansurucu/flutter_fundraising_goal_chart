@@ -134,7 +134,7 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
                   SizedBox(height: 4),
                   BuildTextFormField(
                       keyBoardType: TextInputType.text,
-                      labetText: 'Donor\'s Name',
+                      labelText: 'Donor\'s Name',
                       hintText: 'Enter Donor Name',
                       textFormFieldIcon: Icons.title,
                       textFormFieldIconColor: Constants.accent,
@@ -150,7 +150,7 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
                   SizedBox(height: 4),
                   BuildTextFormField(
                       keyBoardType: TextInputType.number,
-                      labetText: 'Donation Amount',
+                      labelText: 'Donation Amount',
                       hintText: 'Enter Donation Amount',
                       textFormFieldIcon: Icons.mode_edit_sharp,
                       textFormFieldIconColor: Constants.accent,

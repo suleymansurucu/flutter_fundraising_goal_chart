@@ -65,7 +65,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   SizedBox(height: 4),
                   BuildTextFormField(
                       keyBoardType: TextInputType.emailAddress,
-                      labetText: 'Email',
+                      labelText: 'Email',
                       hintText: 'Enter Email Address',
                       textFormFieldIcon: Icons.email,
                       textFormFieldIconColor: Constants.accent,

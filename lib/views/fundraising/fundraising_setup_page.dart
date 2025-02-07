@@ -106,7 +106,7 @@ class _FundraisingSetupPageState extends State<FundraisingSetupPage> {
                   ),
                   BuildTextFormField(
                       keyBoardType: TextInputType.text,
-                      labetText: 'Fundraising Title',
+                      labelText: 'Fundraising Title',
                       hintText: 'Enter Fundraising Title Name',
                       textFormFieldIcon: Icons.title,
                       textFormFieldIconColor: Constants.accent,
@@ -124,7 +124,7 @@ class _FundraisingSetupPageState extends State<FundraisingSetupPage> {
                   ),
                   BuildTextFormField(
                       keyBoardType: TextInputType.text,
-                      labetText: 'Fundraising Slogan',
+                      labelText: 'Fundraising Slogan',
                       hintText: 'Enter Fundraising Slogan',
                       textFormFieldIcon: Icons.mode_edit_sharp,
                       textFormFieldIconColor: Constants.accent,
@@ -142,7 +142,7 @@ class _FundraisingSetupPageState extends State<FundraisingSetupPage> {
                   ),
                   BuildTextFormField(
                       keyBoardType: TextInputType.number,
-                      labetText: 'Goal Amount',
+                      labelText: 'Goal Amount',
                       hintText: 'Enter Fundraising Goal Amount',
                       textFormFieldIcon: Icons.double_arrow,
                       textFormFieldIconColor: Constants.accent,
