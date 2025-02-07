@@ -39,7 +39,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
       if (user != null) {
         await Flushbar(
-          title: 'Welcome to ${_fullNameController.text}',
+          title: 'Welcome ${_fullNameController.text}',
           message: 'Your account created successfully! Thank You!',
           duration: Duration(seconds: 3),
           titleColor: Constants.background,
