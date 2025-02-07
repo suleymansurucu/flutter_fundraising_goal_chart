@@ -75,6 +75,32 @@ class UserViewModels with ChangeNotifier implements AuthBase {
     notifyListeners();
     return isValid;
   }
+  bool validateFormForSignIn(emailController,passwordController ) {
+    bool isValid = true;
+
+    if (emailController.text.isEmpty) {
+      emailError = "Email cannot be empty";
+      isValid = false;
+    } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+        .hasMatch(emailController.text)) {
+      emailError = "Enter a valid email";
+      isValid = false;
+    } else {
+      emailError = null;
+    }
+
+    if (passwordController.text.isEmpty) {
+      passwordError = "Password cannot be empty";
+      isValid = false;
+    } else if (passwordController.text.length < 6) {
+      passwordError = "Password must be at least 6 characters long";
+      isValid = false;
+    } else {
+      passwordError = null;
+    }
+    notifyListeners();
+    return isValid;
+  }
 
   @override
   Future<UserModel?> createWithInEmailAndPassword(
@@ -87,6 +113,17 @@ class UserViewModels with ChangeNotifier implements AuthBase {
     } catch (e) {
       return null;
     }
-    throw UnimplementedError();
+  }
+
+  @override
+  Future<UserModel?> signInWithEmailAndPassword(String email, String password) async{
+    try {
+      _viewState = ViewState.Busy;
+      UserModel? userModel=await userRepository.signInWithEmailAndPassword(email, password);
+      _viewState=ViewState.Idle;
+      return userModel;
+    } catch (e) {
+      return null;
+    }
   }
 }

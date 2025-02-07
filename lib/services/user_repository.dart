@@ -26,5 +26,22 @@ class UserRepository with ChangeNotifier implements AuthBase {
         debugPrint(e.toString());
       }
     }
+    return null;
+  }
+
+  @override
+  Future<UserModel?> signInWithEmailAndPassword(String email, String password) async{
+    if (appMode == AppMode.DEBUG) {
+      //TODO: I will create test data with connection
+    } else {
+      try {
+        UserModel? userModel = await firebaseAuthService
+            .signInWithEmailAndPassword(email, password);
+        return userModel;
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+    }
+    return null;
   }
 }
