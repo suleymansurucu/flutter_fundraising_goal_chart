@@ -80,7 +80,7 @@ class _SingInPageState extends State<SingInPage> {
                   SizedBox(height: 4),
                   BuildTextFormField(
                       keyBoardType: TextInputType.emailAddress,
-                      labetText: 'Email',
+                      labelText: 'Email',
                       hintText: 'Enter Email Address',
                       textFormFieldIcon: Icons.email,
                       textFormFieldIconColor: Constants.accent,
@@ -96,7 +96,7 @@ class _SingInPageState extends State<SingInPage> {
                   SizedBox(height: 4),
                   BuildTextFormField(
                       keyBoardType: TextInputType.visiblePassword,
-                      labetText: 'Password',
+                      labelText: 'Password',
                       hintText: 'Enter Password',
                       textFormFieldIcon: Icons.mode_edit_sharp,
                       textFormFieldIconColor: Constants.accent,
