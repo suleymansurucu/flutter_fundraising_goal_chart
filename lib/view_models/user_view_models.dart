@@ -2,36 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fundraising_goal_chart/locator.dart';
 import 'package:flutter_fundraising_goal_chart/models/user_model.dart';
 import 'package:flutter_fundraising_goal_chart/services/auth_base.dart';
+import 'package:flutter_fundraising_goal_chart/services/firestore_db_base.dart';
 import 'package:flutter_fundraising_goal_chart/services/user_repository.dart';
 
 enum ViewState { Busy, Idle }
 
-class UserViewModels with ChangeNotifier implements AuthBase {
+class UserViewModels with ChangeNotifier implements AuthBase, FirestoreDbBase {
   final UserRepository userRepository = locator<UserRepository>();
 
   ViewState _viewState = ViewState.Idle;
 
   ViewState get state => _viewState;
 
-  set state(ViewState value) {
-    _viewState = value;
-    notifyListeners();
-  }
-
   UserModel? _userModel;
 
   UserModel? get userModel => _userModel;
+  String? _fullName;
 
-  set userModel(UserModel? value) {
-    _userModel = value;
-  }
+  String? get fullName => _fullName;
+
   String? emailError;
   String? userNameError;
-
   String? passwordError;
   String? confirmPasswordError;
+  String? communityNameError;
+  String? addressLine1Error;
+  String? cityError;
+  String? stateError;
+  String? zipCodeError;
 
-  bool validateForm(emailController,userNamecontroller,passwordController,confirmPasswordController ) {
+  // Form doğrulama (Kayıt için)
+  bool validateForm(emailController, userNameController, passwordController,
+      confirmPasswordController) {
     bool isValid = true;
 
     if (emailController.text.isEmpty) {
@@ -65,17 +67,19 @@ class UserViewModels with ChangeNotifier implements AuthBase {
       confirmPasswordError = null;
     }
 
-    if (userNamecontroller.text.isEmpty) {
+    if (userNameController.text.isEmpty) {
       userNameError = "Full Name cannot be empty";
       isValid = false;
-    }else {
+    } else {
       userNameError = null;
     }
 
     notifyListeners();
     return isValid;
   }
-  bool validateFormForSignIn(emailController,passwordController ) {
+
+  // Form doğrulama (Giriş için)
+  bool validateFormForSignIn(emailController, passwordController) {
     bool isValid = true;
 
     if (emailController.text.isEmpty) {
@@ -98,6 +102,7 @@ class UserViewModels with ChangeNotifier implements AuthBase {
     } else {
       passwordError = null;
     }
+
     notifyListeners();
     return isValid;
   }
@@ -106,24 +111,103 @@ class UserViewModels with ChangeNotifier implements AuthBase {
   Future<UserModel?> createWithInEmailAndPassword(
       String email, String password) async {
     try {
-      _viewState = ViewState.Busy;
-      UserModel? userModel=await userRepository.createWithInEmailAndPassword(email, password);
-      _viewState=ViewState.Idle;
+      _setState(ViewState.Busy);
+      UserModel? userModel =
+          await userRepository.createWithInEmailAndPassword(email, password);
+      _userModel = userModel;
+      _setState(ViewState.Idle);
       return userModel;
     } catch (e) {
+      _setState(ViewState.Idle);
       return null;
     }
   }
 
   @override
-  Future<UserModel?> signInWithEmailAndPassword(String email, String password) async{
+  Future<UserModel?> signInWithEmailAndPassword(
+      String email, String password) async {
     try {
-      _viewState = ViewState.Busy;
-      UserModel? userModel=await userRepository.signInWithEmailAndPassword(email, password);
-      _viewState=ViewState.Idle;
+      _setState(ViewState.Busy);
+      UserModel? userModel =
+          await userRepository.signInWithEmailAndPassword(email, password);
+      _userModel = userModel;
+      _setState(ViewState.Idle);
       return userModel;
     } catch (e) {
+      _setState(ViewState.Idle);
       return null;
+    }
+  }
+
+  @override
+  Future<UserModel?> getUserData(String userID) async {
+    try {
+      _setState(ViewState.Busy);
+      UserModel? result = await userRepository.getUserData(userID);
+      _userModel = result;
+      print('Read de user okuyorum.');
+      _setState(ViewState.Idle);
+      return result;
+    } catch (e) {
+      _setState(ViewState.Idle);
+      return null;
+    }
+  }
+
+  @override
+  Future<bool?> saveUser(UserModel userModel) async {
+    try {
+      _setState(ViewState.Busy);
+      bool? result = await userRepository.saveUser(userModel);
+      _setState(ViewState.Idle);
+      return result;
+    } catch (e) {
+      _setState(ViewState.Idle);
+      return false;
+    }
+  }
+
+  @override
+  Future<bool?> signOutWithEmailAndPassword(String userID) async {
+    try {
+      _setState(ViewState.Busy);
+      bool? result = await userRepository.signOutWithEmailAndPassword(userID);
+      if (result == true) {
+        _userModel = null; // Kullanıcı durumunu sıfırla
+        _fullName = null; // fullName'i sıfırla
+      }
+      _setState(ViewState.Idle);
+      return result;
+    } catch (e) {
+      _setState(ViewState.Idle);
+      return false;
+    }
+  }
+
+  // Yardımcı metod: State'i güncelle ve UI'ı bildir
+  void _setState(ViewState state) {
+    _viewState = state;
+    notifyListeners();
+  }
+
+  void _setFullName(String value) {
+    _fullName = value;
+    notifyListeners();
+  }
+
+  @override
+  Future<bool?> updateUserProfile(
+      String userID, Map<String, dynamic> updatedFields) async {
+    try {
+      _setState(ViewState.Busy);
+      bool? result =
+          userRepository.updateUserProfile(userID, updatedFields) as bool?;
+
+      _setState(ViewState.Idle);
+      return result;
+    } catch (e) {
+      _setState(ViewState.Idle);
+      return false;
     }
   }
 }
