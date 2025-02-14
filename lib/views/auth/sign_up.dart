@@ -4,6 +4,7 @@ import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_Text_Form_Field.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_elevated_button.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_text_for_form.dart';
+import 'package:flutter_fundraising_goal_chart/models/user_model.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
 import 'package:flutter_fundraising_goal_chart/views/auth/sing_in.dart';
 import 'package:flutter_fundraising_goal_chart/views/fundraising/fundraising_setup_page.dart';
@@ -36,8 +37,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
       var user = await userViewModels.createWithInEmailAndPassword(
           email, passwordConfirm);
+      print('Full Name save etmeden kontrol'+user!.fullName.toString());
 
       if (user != null) {
+        var newSaveUser=UserModel(userID: user.userID, email: email,createdAt: DateTime.timestamp(), fullName: fullName);
+        await userViewModels.saveUser(newSaveUser);
         await Flushbar(
           title: 'Welcome ${_fullNameController.text}',
           message: 'Your account created successfully! Thank You!',
@@ -132,6 +136,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       errorText: userViewModels.userNameError,
                       onSaved: (value) {
                         fullName = value!;
+                        debugPrint('Widget $fullName');
                       },
                     ),
                     BuildTextForForm(

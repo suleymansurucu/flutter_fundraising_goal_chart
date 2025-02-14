@@ -2,14 +2,17 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_Text_Form_Field.dart';
+import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_draw_menu.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_elevated_button.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_text_for_form.dart';
+import 'package:flutter_fundraising_goal_chart/core/utils/constants/custom_app_bar.dart';
 import 'package:flutter_fundraising_goal_chart/models/user_model.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
 import 'package:flutter_fundraising_goal_chart/views/auth/forgot_password.dart';
 import 'package:flutter_fundraising_goal_chart/views/auth/sign_up.dart';
 import 'package:flutter_fundraising_goal_chart/views/fundraising/fundraising_setup_page.dart';
 import 'package:provider/provider.dart';
+
 
 class SingInPage extends StatefulWidget {
   const SingInPage({super.key});
@@ -23,18 +26,26 @@ class _SingInPageState extends State<SingInPage> {
   final TextEditingController _passwordController = TextEditingController();
   late String email, password;
   final _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  String? fullName;
 
-  void _singIn() async{
-    final UserViewModels userViewModels =
-    Provider.of<UserViewModels>(context, listen: false);
-    bool validateForm=userViewModels.validateFormForSignIn(_emailController, _passwordController);
+
+  void _singIn() async {
+    final UserViewModels userViewModels = Provider.of<UserViewModels>(context, listen: false);
+    bool validateForm = userViewModels.validateFormForSignIn(
+        _emailController, _passwordController);
     if (validateForm) {
       _formKey.currentState!.save();
 
-      UserModel? user=await userViewModels.signInWithEmailAndPassword(email, password);
-      if (user != null) {
+      UserModel? user = await userViewModels.signInWithEmailAndPassword(email, password);
+      final _userviewModel = await userViewModels.getUserData(userViewModels.userModel!.userID);
+
+      debugPrint('Burasi sign in mehod ${user!.fullName}');
+      debugPrint('Burasi sign in mehod ----- ${_userviewModel!.fullName}');
+
+      if (_userviewModel.fullName != null) {
         await Flushbar(
-          title: 'Welcome ${user.fullName}',
+          title: 'Welcome ${_userviewModel.fullName}',
           message: 'Your account signed successfully! Thank You!',
           duration: Duration(seconds: 3),
           titleColor: Constants.background,
@@ -47,12 +58,14 @@ class _SingInPageState extends State<SingInPage> {
           margin: EdgeInsets.all(20),
         ).show(context);
 
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => FundraisingSetupPage()));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                   FundraisingSetupPage()));
       }
 
       debugPrint(user!.userID);
-
     }
     debugPrint('Email: ${_emailController.text}');
     debugPrint('Password: ${_passwordController.text}');
@@ -72,11 +85,13 @@ class _SingInPageState extends State<SingInPage> {
 
   @override
   Widget build(BuildContext context) {
-    final UserViewModels userViewModels = Provider.of<UserViewModels>(
-        context, listen: false);
+    final UserViewModels userViewModels =
+        Provider.of<UserViewModels>(context, listen: false);
     return Scaffold(
-      backgroundColor: Constants.background,
-      body: Center(
+      key: _scaffoldKey,
+      appBar:CustomAppBar(title: 'Sign In Page', scaffoldKey: _scaffoldKey,),
+      drawer: BuildDrawMenu(),
+      body:  Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(16),
           child: Container(
@@ -152,11 +167,12 @@ class _SingInPageState extends State<SingInPage> {
                       errorText: userViewModels.passwordError,
                       onSaved: (value) {
                         password = value!;
-                      },),
+                      },
+                    ),
                     SizedBox(height: 20),
                     BuildElevatedButton(
                       onPressed: _singIn,
-                      buttonText: "Create",
+                      buttonText: "Sign In",
                       buttonColor: Constants.accent,
                       textColor: Colors.white,
                       borderRadius: 15,
@@ -214,4 +230,5 @@ class _SingInPageState extends State<SingInPage> {
       ),
     );
   }
+
 }
