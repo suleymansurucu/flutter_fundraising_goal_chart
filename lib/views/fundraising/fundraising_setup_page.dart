@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_Text_Form_Field.dart';
+import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_draw_menu.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_drop_down_menu.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_elevated_button.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_text_for_form.dart';
+import 'package:flutter_fundraising_goal_chart/core/utils/constants/custom_app_bar.dart';
 
 class FundraisingSetupPage extends StatefulWidget {
   const FundraisingSetupPage({super.key});
@@ -15,7 +17,10 @@ class FundraisingSetupPage extends StatefulWidget {
 class _FundraisingSetupPageState extends State<FundraisingSetupPage> {
   CurrencyDropDownList _selectedCurrency = CurrencyDropDownList.dollar;
   YesOrNoDropDownList _selectedYesOrNo = YesOrNoDropDownList.yes;
-  GraphicTypeDropDownList _selectedgraphicType=GraphicTypeDropDownList.progressBar;
+  final GlobalKey<ScaffoldState> _scaffoldKeyFundraisingSetupPage = GlobalKey<ScaffoldState>();
+
+  GraphicTypeDropDownList _selectedgraphicType =
+      GraphicTypeDropDownList.progressBar;
   final TextEditingController _fundraisingTitleController =
       TextEditingController();
   final TextEditingController _fundraisingSloganController =
@@ -34,6 +39,7 @@ class _FundraisingSetupPageState extends State<FundraisingSetupPage> {
       _selectedYesOrNo = newValue;
     });
   }
+
   void _ongraphicTypeDropDown(GraphicTypeDropDownList newValue) {
     setState(() {
       _selectedgraphicType = newValue;
@@ -56,12 +62,15 @@ class _FundraisingSetupPageState extends State<FundraisingSetupPage> {
     print("Fundraising Goal Amount: ${_fundraisingGoalController.text}");
     print("Selected Currency: ${_selectedCurrency.label}");
     print("Show Donor Names: ${_selectedYesOrNo.label}");
+    print('Fundraising Goal Chart: ${_selectedgraphicType.label}');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Constants.background,
+      key: _scaffoldKeyFundraisingSetupPage,
+      appBar:CustomAppBar(title: 'Fundraising Setup Page',scaffoldKey: _scaffoldKeyFundraisingSetupPage,),
+      drawer: BuildDrawMenu(),
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(16),
@@ -188,7 +197,7 @@ class _FundraisingSetupPageState extends State<FundraisingSetupPage> {
                   SizedBox(height: 15),
                   BuildTextForForm(
                       text:
-                      'Would you like to select a chart type for the Fundraising Goal Chart?',
+                          'Would you like to select a chart type for the Fundraising Goal Chart?',
                       textColor: Constants.textColor,
                       fontSize: 14,
                       fontWeight: FontWeight.w100),
