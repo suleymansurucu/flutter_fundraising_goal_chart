@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class BuildTextFormField extends StatelessWidget {
+class BuildTextFormField extends StatefulWidget {
   final TextEditingController textEditingController;
   final TextInputType keyBoardType;
-  final String labelText;
+  final String? labelText;
   final String hintText;
-  final IconData textFormFieldIcon;
-  final Color textFormFieldIconColor;
+  final IconData? textFormFieldIcon;
+  final Color? textFormFieldIconColor;
   final Color outLineInputBorderColor;
   final Color outLineInputBorderColorOnFocused;
   final FormFieldSetter<String>? onSaved;
@@ -17,10 +17,10 @@ class BuildTextFormField extends StatelessWidget {
   const BuildTextFormField({
     required this.textEditingController,
     required this.keyBoardType,
-    required this.labelText,
+     this.labelText,
     required this.hintText,
-    required this.textFormFieldIcon,
-    required this.textFormFieldIconColor,
+     this.textFormFieldIcon,
+     this.textFormFieldIconColor,
     required this.outLineInputBorderColor,
     required this.outLineInputBorderColorOnFocused,
     this.onSaved,
@@ -30,27 +30,32 @@ class BuildTextFormField extends StatelessWidget {
   });
 
   @override
+  State<BuildTextFormField> createState() => _BuildTextFormFieldState();
+}
+
+class _BuildTextFormFieldState extends State<BuildTextFormField> {
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: textEditingController,
-      keyboardType: keyBoardType,
+      controller: widget.textEditingController,
+      keyboardType: widget.keyBoardType,
       decoration: InputDecoration(
-        labelText: labelText,
-        hintText: hintText,
-        errorText: errorText,
-        prefixIcon: Icon(textFormFieldIcon, color: textFormFieldIconColor),
+        labelText: widget.labelText,
+        hintText: widget.hintText,
+        errorText: widget.errorText,
+        prefixIcon: Icon(widget.textFormFieldIcon, color: widget.textFormFieldIconColor),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: outLineInputBorderColor),
+          borderSide: BorderSide(color: widget.outLineInputBorderColor),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide:
-          BorderSide(color: outLineInputBorderColorOnFocused, width: 2),
+          BorderSide(color: widget.outLineInputBorderColorOnFocused, width: 2),
         ),
       ),
-      onSaved: onSaved,
-      validator: validator,
+      onSaved: widget.onSaved,
+      validator: widget.validator,
     );
   }
 }
