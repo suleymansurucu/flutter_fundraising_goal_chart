@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_Text_Form_Field.dart';
-import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_drop_down_menu.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_elevated_button.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_text_for_form.dart';
+import 'package:flutter_fundraising_goal_chart/view_models/fundraising_view_models.dart';
+import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
+import 'package:provider/provider.dart';
 
 class DonationEntryPage extends StatefulWidget {
   const DonationEntryPage({super.key});
@@ -13,19 +15,37 @@ class DonationEntryPage extends StatefulWidget {
 }
 
 class _DonationEntryPageState extends State<DonationEntryPage> {
+  List<String> list = [];
+  String? thisFundraising;
+
   // 🔹 Text Controllers
-  final TextEditingController _donationAmountController = TextEditingController();
+  final TextEditingController _donationAmountController =
+  TextEditingController();
   final TextEditingController _donorNameController = TextEditingController();
 
-  // 🔹 List of Fundraising Options
-  final List<String> getfundraisingList = [
-    'Clifton Blue Mosque 2025',
-    'Clifton Blue Mosque 2024',
-    'Clifton Blue Mosque 2022'
-  ];
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
 
-  // 🔹 Selected Fundraising
-  String thisFundraising = 'Clifton Blue Mosque 2025';
+  void fetchData() async {
+    final fundraisingViewModels =
+    Provider.of<FundraisingViewModels>(context, listen: false);
+    final userViewModels = Provider.of<UserViewModels>(context, listen: false);
+    final String userID = userViewModels.userModel!.userID;
+
+    List<String>? fetchedList =
+    await fundraisingViewModels.fetchFundraisingCommunity(userID)
+    as List<String>;
+
+    if (fetchedList != null && fetchedList.isNotEmpty) {
+      setState(() {
+        list = fetchedList;
+        thisFundraising = list[0]; // Default selection
+      });
+    }
+  }
 
   // 🔹 Function to update dropdown selection
   void _onFundraising(String value) {
@@ -54,10 +74,10 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
       backgroundColor: Constants.background,
       body: Center(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Container(
             width: 400,
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(15),
@@ -66,7 +86,7 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
                   color: Colors.grey.shade200,
                   spreadRadius: 3,
                   blurRadius: 7,
-                  offset: Offset(0, 3),
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
@@ -82,20 +102,20 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
                         fontSize: 14,
                         fontWeight: FontWeight.w100),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Align(
                     alignment: Alignment.centerRight,
                     child: Container(
                       width: 400,
                       decoration: BoxDecoration(
-                        border: Border.all(color: Constants.primary, width: 1.5),
+                        border:
+                        Border.all(color: Constants.primary, width: 1.5),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           dropdownColor: Constants.background,
-                        
                           value: thisFundraising,
                           onChanged: (String? newValue) {
                             if (newValue != null) {
@@ -103,7 +123,7 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
                             }
                           },
                           isExpanded: true,
-                          items: getfundraisingList.map((String item) {
+                          items: list.map((String item) {
                             return DropdownMenuItem<String>(
                               value: item,
                               child: Text(item),
@@ -113,7 +133,7 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Align(
                     child: Text(
                       "Enter Your Donation",
@@ -125,13 +145,13 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   BuildTextForForm(
                       text: 'Please Enter Your Donor\'s Name:',
                       textColor: Constants.textColor,
                       fontSize: 14,
                       fontWeight: FontWeight.w100),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   BuildTextFormField(
                       keyBoardType: TextInputType.text,
                       labelText: 'Donor\'s Name',
@@ -141,13 +161,13 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
                       outLineInputBorderColor: Constants.accent,
                       outLineInputBorderColorOnFocused: Constants.primary,
                       textEditingController: _donorNameController),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   BuildTextForForm(
                       text: 'Please Enter Donation Amount:',
                       textColor: Constants.textColor,
                       fontSize: 14,
                       fontWeight: FontWeight.w100),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   BuildTextFormField(
                       keyBoardType: TextInputType.number,
                       labelText: 'Donation Amount',
@@ -157,7 +177,7 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
                       outLineInputBorderColor: Constants.accent,
                       outLineInputBorderColorOnFocused: Constants.primary,
                       textEditingController: _donationAmountController),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   BuildElevatedButton(
                     onPressed: _submitForm,
                     buttonText: "Create",
