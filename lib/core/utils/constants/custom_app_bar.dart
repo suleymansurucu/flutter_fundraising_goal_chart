@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_fundraising_goal_chart/core/routes/route_names.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
-import 'package:flutter_fundraising_goal_chart/views/auth/sing_in.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -54,11 +55,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         await userViewModels.signOutWithEmailAndPassword(
                             userViewModels.userModel!.userID);
                         if (context.mounted) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const SingInPage()),
-                          );
+                          context.push(RouteNames.home);
                         }
                       },
                       child: Text(
@@ -75,10 +72,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ] else ...[
               TextButton(
                 onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const SingInPage()),
-                  );
+                  context.push(RouteNames.singIn);
                 },
                 child: Text(
                   'Sign In',

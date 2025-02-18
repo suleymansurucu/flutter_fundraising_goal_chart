@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_fundraising_goal_chart/core/routes/route_names.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
-import 'package:flutter_fundraising_goal_chart/views/auth/sing_in.dart';
-import 'package:flutter_fundraising_goal_chart/views/auth/user_profile.dart';
-import 'package:flutter_fundraising_goal_chart/views/donation/donation_entry_page.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class BuildDrawMenu extends StatelessWidget {
@@ -47,24 +46,41 @@ class BuildDrawMenu extends StatelessWidget {
                 leading: const Icon(Icons.home, color: Colors.black),
                 title: const Text('Home'),
                 onTap: () {
-                  Navigator.pop(context);
+                  context.push(RouteNames.home);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.info, color: Colors.black),
                 title: const Text('Profile'),
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => UserProfile()));                },
-              ),
-              ListTile(
-                leading:
-                    const Icon(Icons.volunteer_activism, color: Colors.black),
-                title: const Text('Fundraising'),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => UserProfile()));
+                  context.push(RouteNames.userProfile);
                 },
+              ),
+              ExpansionTile(
+                title: Text('Fundraising Goal Chart Tools'),
+                leading: const Icon(Icons.volunteer_activism,
+                    color: Colors.black),
+                children: [
+                  ListTile(
+
+                    title: const Text('Create New Fundraising Display Chart',style: TextStyle(fontSize: 14),),
+                    onTap: () {
+                      context.push(RouteNames.fundraisingSetup);
+                    },
+                  ),
+                  ListTile(
+                    title: const Text('Previous Fundraising Display Chart',style: TextStyle(fontSize: 14),),
+                    onTap: () {
+                      context.push(RouteNames.fundraisingSetup);
+                    },
+                  ),
+                  ListTile(
+                    title: const Text('Donation Enter For Fundraising',style: TextStyle(fontSize: 14),),
+                    onTap: () {
+                      context.push(RouteNames.entryDonation);
+                    },
+                  ),
+                ],
               ),
               const Divider(),
               ListTile(
@@ -75,10 +91,8 @@ class BuildDrawMenu extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                   fullName != null && fullName!.isNotEmpty
-                      ? MaterialPageRoute(
-                          builder: (context) => DonationEntryPage())
-                      : Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => SingInPage()));
+                      ? context.push(RouteNames.signUp)
+                      : context.push(RouteNames.singIn);
                 },
               ),
             ],

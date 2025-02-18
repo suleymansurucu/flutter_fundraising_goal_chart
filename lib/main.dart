@@ -1,7 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_fundraising_goal_chart/core/routes/app_router.dart';
 import 'package:flutter_fundraising_goal_chart/firebase_options.dart';
 import 'package:flutter_fundraising_goal_chart/locator.dart';
+import 'package:flutter_fundraising_goal_chart/view_models/fundraising_view_models.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
 import 'package:flutter_fundraising_goal_chart/views/landing_page.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +19,8 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserViewModels()),
+        ChangeNotifierProvider(create: (_) => FundraisingViewModels()),
+
       ],
       child: const MyApp(),
     ),
@@ -28,9 +32,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: appRouter,
       debugShowCheckedModeBanner: false,
-      home: LandingPage(),
     );
   }
 }

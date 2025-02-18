@@ -1,5 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_fundraising_goal_chart/core/routes/route_names.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_Text_Form_Field.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_draw_menu.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart
 import 'package:flutter_fundraising_goal_chart/views/auth/forgot_password.dart';
 import 'package:flutter_fundraising_goal_chart/views/auth/sign_up.dart';
 import 'package:flutter_fundraising_goal_chart/views/fundraising/fundraising_setup_page.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 
@@ -58,11 +60,7 @@ class _SingInPageState extends State<SingInPage> {
           margin: EdgeInsets.all(20),
         ).show(context);
 
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                   FundraisingSetupPage()));
+        context.push(RouteNames.fundraisingSetup);
       }
 
       debugPrint(user!.userID);
@@ -72,8 +70,7 @@ class _SingInPageState extends State<SingInPage> {
   }
 
   void _signUp() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => SignUpPage()));
+    context.push(RouteNames.signUp);
   }
 
   @override

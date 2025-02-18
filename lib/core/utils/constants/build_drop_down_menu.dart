@@ -40,6 +40,8 @@ class BuildDropDownMenu<T> extends StatefulWidget {
   final Color focusedBorderColor;
   final Color iconColor;
   final double borderRadius;
+  final double? containerWith;
+
   final List<T> items; // To get enum values as a list.
 
 
@@ -53,6 +55,7 @@ class BuildDropDownMenu<T> extends StatefulWidget {
     required this.iconColor,
     required this.items,
     this.borderRadius = 12.0,
+    this.containerWith=400.0
   });
 
   @override
@@ -71,7 +74,7 @@ class _BuildDropDownMenuState<T> extends State<BuildDropDownMenu<T>> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 400,
+      width: widget.containerWith,
       decoration: BoxDecoration(
         border: Border.all(color: widget.borderColor, width: 1.5),
         borderRadius: BorderRadius.circular(widget.borderRadius),
