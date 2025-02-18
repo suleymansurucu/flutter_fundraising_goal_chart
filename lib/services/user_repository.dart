@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_fundraising_goal_chart/locator.dart';
+import 'package:flutter_fundraising_goal_chart/models/fundraising_model.dart';
 import 'package:flutter_fundraising_goal_chart/models/user_model.dart';
 import 'package:flutter_fundraising_goal_chart/services/auth_base.dart';
 import 'package:flutter_fundraising_goal_chart/services/firebase_auth_service.dart';
@@ -115,6 +116,40 @@ class UserRepository with ChangeNotifier implements AuthBase, FirestoreDbBase {
       } catch (e) {
         debugPrint(e.toString());
         return false;
+      }
+
+    }
+    return null;
+  }
+
+  @override
+  Future<bool?> createFundraising(Map<String, dynamic> fundraisingModel, String fundraisingID, String userID) async {
+    if (appMode == AppMode.DEBUG) {
+      //TODO: I will create test data with connection
+    } else {
+      try {
+        var result =  firestoreDbService.createFundraising(fundraisingModel,fundraisingID, userID);
+        return result;
+      } catch (e) {
+        debugPrint(e.toString());
+        return null;
+      }
+
+    }
+    return null;
+  }
+
+  @override
+  Future<List?> fetchFundraisingCommunity(String userID) async{
+    if (appMode == AppMode.DEBUG) {
+      //TODO: I will create test data with connection
+    } else {
+      try {
+        var result =  await firestoreDbService.fetchFundraisingCommunity(userID);
+        return result;
+      } catch (e) {
+        debugPrint(e.toString());
+        return null;
       }
 
     }

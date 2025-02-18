@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fundraising_goal_chart/locator.dart';
+import 'package:flutter_fundraising_goal_chart/models/fundraising_model.dart';
 import 'package:flutter_fundraising_goal_chart/models/user_model.dart';
 import 'package:flutter_fundraising_goal_chart/services/auth_base.dart';
 import 'package:flutter_fundraising_goal_chart/services/firestore_db_base.dart';
@@ -209,5 +210,19 @@ class UserViewModels with ChangeNotifier implements AuthBase, FirestoreDbBase {
       _setState(ViewState.Idle);
       return false;
     }
+  }
+
+
+
+  @override
+  Future<bool?> createFundraising(Map<String, dynamic> fundraisingModel,String fundraisingID, String userID) async {
+    // TODO: implement createFundraising
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List?> fetchFundraisingCommunity(String userID) {
+    // TODO: implement fetchFundraisingCommunity
+    throw UnimplementedError();
   }
 }
