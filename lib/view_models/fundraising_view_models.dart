@@ -42,8 +42,8 @@ class FundraisingViewModels with ChangeNotifier {
   Future<List?> fetchFundraisingCommunity(String userID) async {
     try {
       _setState(ViewState.Busy);
-      List<String> listName =
-          await userRepository.fetchFundraisingCommunity(userID) as List<String>;
+      List<String> listName = await userRepository
+          .fetchFundraisingCommunity(userID) as List<String>;
 
       _setState(ViewState.Idle);
       return listName;
@@ -56,5 +56,62 @@ class FundraisingViewModels with ChangeNotifier {
   void _setState(ViewState state) {
     _viewState = state;
     notifyListeners();
+  }
+
+  Future<List<FundraisingModel>?> fetchFundraising(String userID) async {
+    try {
+      _setState(ViewState.Busy);
+      var result = await userRepository.fetchFundraising(userID);
+
+      _setState(ViewState.Idle);
+      return result;
+    } catch (e) {
+      _setState(ViewState.Idle);
+      return null;
+    }
+  }
+
+  Future<String?> getFundraisingIDByCommunityName(
+      String userID, String communityName) async {
+    try {
+      _setState(ViewState.Busy);
+      var result = await userRepository.getFundraisingIDByCommunityName(
+          userID, communityName);
+
+      _setState(ViewState.Idle);
+      return result;
+    } catch (e) {
+      _setState(ViewState.Idle);
+      return null;
+    }
+  }
+
+  Future<bool?> saveDonation(String userID, String fundraisingID,
+      String communityName, String donorName, double donationAmount) async {
+    try {
+      _setState(ViewState.Busy);
+      var result = await userRepository.saveDonation(
+          userID, fundraisingID, communityName, donorName, donationAmount);
+
+      _setState(ViewState.Idle);
+      return result;
+    } catch (e) {
+      _setState(ViewState.Idle);
+      return null;
+    }
+  }
+
+  Future<FundraisingModel?> getFundraiser(
+      String userID, String fundraisingID) async {
+    try {
+      _setState(ViewState.Busy);
+      var result = await userRepository.getFundraiser(userID, fundraisingID);
+
+      _setState(ViewState.Idle);
+      return result;
+    } catch (e) {
+      _setState(ViewState.Idle);
+      return null;
+    }
   }
 }

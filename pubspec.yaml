@@ -43,6 +43,9 @@ dependencies:
   go_router: ^14.8.0
   uuid: ^4.5.1
   intl: ^0.20.2
+  pie_chart: ^5.4.0
+  syncfusion_flutter_charts: ^28.2.6
+
 
 
 dev_dependencies:

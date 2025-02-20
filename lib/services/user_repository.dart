@@ -14,12 +14,13 @@ enum AppMode { DEBUG, RELEASE }
 class UserRepository with ChangeNotifier implements AuthBase, FirestoreDbBase {
   AppMode appMode = AppMode.RELEASE;
 
-  final FirebaseAuthService firebaseAuthService = locator<FirebaseAuthService>();
+  final FirebaseAuthService firebaseAuthService =
+      locator<FirebaseAuthService>();
   final FirestoreDbService firestoreDbService = locator<FirestoreDbService>();
 
   @override
-  Future<UserModel?> createWithInEmailAndPassword(String email,
-      String password) async {
+  Future<UserModel?> createWithInEmailAndPassword(
+      String email, String password) async {
     if (appMode == AppMode.DEBUG) {
       //TODO: I will create test data with connection
     } else {
@@ -35,8 +36,8 @@ class UserRepository with ChangeNotifier implements AuthBase, FirestoreDbBase {
   }
 
   @override
-  Future<UserModel?> signInWithEmailAndPassword(String email,
-      String password) async {
+  Future<UserModel?> signInWithEmailAndPassword(
+      String email, String password) async {
     if (appMode == AppMode.DEBUG) {
       //TODO: I will create test data with connection
     } else {
@@ -57,11 +58,10 @@ class UserRepository with ChangeNotifier implements AuthBase, FirestoreDbBase {
       //TODO: I will create test data with connection
     } else {
       try {
-        final user=firebaseAuthService.currentUser;
+        final user = firebaseAuthService.currentUser;
         if (user != null) {
           return await firestoreDbService.getUserData(userID);
-        }  
-
+        }
       } catch (e) {
         debugPrint(e.toString());
         return null;
@@ -86,72 +86,141 @@ class UserRepository with ChangeNotifier implements AuthBase, FirestoreDbBase {
   }
 
   @override
-
   @override
   Future<bool?> signOutWithEmailAndPassword(String userID) async {
     if (appMode == AppMode.DEBUG) {
       //TODO: I will create test data with connection
     } else {
       try {
-        var result = await firebaseAuthService.signOutWithEmailAndPassword(
-            userID);
+        var result =
+            await firebaseAuthService.signOutWithEmailAndPassword(userID);
         return result;
       } catch (e) {
         debugPrint(e.toString());
         return false;
       }
-
     }
-
   }
 
   @override
-  Future<bool?> updateUserProfile(String userID, Map<String, dynamic> updatedFields) async {
+  Future<bool?> updateUserProfile(
+      String userID, Map<String, dynamic> updatedFields) async {
     if (appMode == AppMode.DEBUG) {
       //TODO: I will create test data with connection
     } else {
       try {
-        var result =  firestoreDbService.updateUserProfile(userID, updatedFields);
+        var result =
+            firestoreDbService.updateUserProfile(userID, updatedFields);
         return result;
       } catch (e) {
         debugPrint(e.toString());
         return false;
       }
-
     }
     return null;
   }
 
   @override
-  Future<bool?> createFundraising(Map<String, dynamic> fundraisingModel, String fundraisingID, String userID) async {
+  Future<bool?> createFundraising(Map<String, dynamic> fundraisingModel,
+      String fundraisingID, String userID) async {
     if (appMode == AppMode.DEBUG) {
       //TODO: I will create test data with connection
     } else {
       try {
-        var result =  firestoreDbService.createFundraising(fundraisingModel,fundraisingID, userID);
+        var result = firestoreDbService.createFundraising(
+            fundraisingModel, fundraisingID, userID);
         return result;
       } catch (e) {
         debugPrint(e.toString());
         return null;
       }
-
     }
     return null;
   }
 
   @override
-  Future<List?> fetchFundraisingCommunity(String userID) async{
+  Future<List?> fetchFundraisingCommunity(String userID) async {
     if (appMode == AppMode.DEBUG) {
       //TODO: I will create test data with connection
     } else {
       try {
-        var result =  await firestoreDbService.fetchFundraisingCommunity(userID);
+        var result = await firestoreDbService.fetchFundraisingCommunity(userID);
         return result;
       } catch (e) {
         debugPrint(e.toString());
         return null;
       }
+    }
+    return null;
+  }
 
+  @override
+  Future<bool?> saveDonation(String userID, String fundraisingID,
+      String communityName, String donorName, double donationAmount) async {
+    if (appMode == AppMode.DEBUG) {
+      //TODO: I will create test data with connection
+    } else {
+      try {
+        var result = await firestoreDbService.saveDonation(
+            userID, fundraisingID, communityName, donorName, donationAmount);
+        return result;
+      } catch (e) {
+        debugPrint(e.toString());
+        return false;
+      }
+    }
+  }
+
+  @override
+  Future<List<FundraisingModel>?> fetchFundraising(
+    String userID,
+  ) async {
+    if (appMode == AppMode.DEBUG) {
+      //TODO: I will create test data with connection
+    } else {
+      try {
+        var result = await firestoreDbService.fetchFundraising(userID);
+        return result;
+      } catch (e) {
+        debugPrint(e.toString());
+        return null;
+      }
+    }
+    return null;
+  }
+
+  @override
+  Future<String?> getFundraisingIDByCommunityName(
+      String userID, String communityName) async {
+    if (appMode == AppMode.DEBUG) {
+      //TODO: I will create test data with connection
+    } else {
+      try {
+        var result = await firestoreDbService.getFundraisingIDByCommunityName(
+            userID, communityName);
+        return result;
+      } catch (e) {
+        debugPrint(e.toString());
+        return null;
+      }
+    }
+    return null;
+  }
+
+  @override
+  Future<FundraisingModel?> getFundraiser(String userID,String fundraisingID) async{
+    if (appMode == AppMode.DEBUG) {
+      //TODO: I will create test data with connection
+    } else {
+      try {
+        final user = firebaseAuthService.currentUser;
+        if (user != null) {
+          return await firestoreDbService.getFundraiser(userID,fundraisingID);
+        }
+      } catch (e) {
+        debugPrint(e.toString());
+        return null;
+      }
     }
     return null;
   }

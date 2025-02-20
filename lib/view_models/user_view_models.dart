@@ -225,4 +225,28 @@ class UserViewModels with ChangeNotifier implements AuthBase, FirestoreDbBase {
     // TODO: implement fetchFundraisingCommunity
     throw UnimplementedError();
   }
+
+  @override
+  Future<bool?> saveDonation(String userID, String fundraisingID, String communityName, String donorName, double donationAmount) {
+    // TODO: implement saveDonation
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<FundraisingModel>?> fetchFundraising(String userID) {
+    // TODO: implement fetchFundraising
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String?> getFundraisingIDByCommunityName(String userID, String communityName) {
+    // TODO: implement getFundraisingIDByCommunityName
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<FundraisingModel> getFundraiser(String userID,String fundraisingID) {
+    // TODO: implement getFundraiser
+    throw UnimplementedError();
+  }
 }

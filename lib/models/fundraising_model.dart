@@ -4,8 +4,8 @@ class FundraisingModel {
   final String uniqueName;
   final String slogan;
   final String currency;
-  final bool showDonorNames;
-  final bool showDonorAmount;
+  final String showDonorNames;
+  final String showDonorAmount;
 
   @override
   String toString() {
@@ -15,10 +15,9 @@ class FundraisingModel {
   final String graphicType;
   final List<CommunityFundraising> communities;
 
-  FundraisingModel(
-   { this.fundraisingID,
-     required this.userID,
-     required this.uniqueName,
+  FundraisingModel({ this.fundraisingID,
+    required this.userID,
+    required this.uniqueName,
     required this.slogan,
     required this.currency,
     required this.showDonorNames,
@@ -31,27 +30,38 @@ class FundraisingModel {
     return {
       'userID': userID,
       'fundraisingID': fundraisingID,
-      'uniqueName' : uniqueName,
-      'slogan': slogan,
+      'uniqueName': uniqueName,
+      'fundraisingSlogan': slogan,
       'currency': currency,
       'showDonorNames': showDonorNames,
       'showDonorAmount': showDonorAmount,
-      'graphicType': graphicType,
+      'goalChartType': graphicType,
       'communities': communities,
     };
   }
 
-  factory FundraisingModel.fromMap(Map<String, dynamic> map) {
+  factory FundraisingModel.fromMap(Map<String?, dynamic> map) {
     return FundraisingModel(
       userID: map['userID'] as String,
-      fundraisingID: map['fundraisingID'] != null ? map['fundraisingID'] as String : null,
-      uniqueName: map['uniqueName'] as String,
-      slogan: map['slogan'] as String,
-      currency: map['currency'] as String,
-      showDonorNames: map['showDonorNames'] as bool,
-      showDonorAmount: map['showDonorAmount'] as bool,
-      graphicType: map['graphicType'] as String,
-      communities: map['communities'] as List<CommunityFundraising>,
+      fundraisingID: map['fundraisingID'] != null
+          ? map['fundraisingID'] as String
+          : null,
+      uniqueName: map['uniqueName'] as String? ?? '',
+      // Null ise boş string kullan
+      slogan: map['fundraisingSlogan'] as String? ?? '',
+      // Null ise boş string kullan
+      currency: map['currency'] as String? ?? '',
+      // Null ise boş string kullan
+      showDonorNames: map['showDonorNames'] as String? ?? '',
+      // Null ise true kullan
+      showDonorAmount: map['showDonorAmount'] as String? ?? '',
+      // Null ise true kullan
+      graphicType: map['goalChartType'] as String? ?? '',
+      // Null ise boş string kullan
+      communities: (map['communities'] as List<dynamic>?)
+          ?.map((item) =>
+          CommunityFundraising.fromMap(item as Map<String, dynamic>))
+          .toList() ?? [], // Null ise boş liste kullan
     );
   }
 }
@@ -64,15 +74,15 @@ class CommunityFundraising {
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
-      'goal': goal,
+      'communityName': name,
+      'communityGoal': goal,
     };
   }
 
   factory CommunityFundraising.fromMap(Map<String, dynamic> map) {
     return CommunityFundraising(
-      name: map['name'] as String,
-      goal: map['goal'] as double,
+      name: map['communityName'] as String? ?? '',  // Null ise boş string kullan
+      goal: map['communityGoal'] as double? ?? 0.0,  // Null ise 0.0 kullan
     );
   }
 }

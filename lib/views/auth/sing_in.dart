@@ -10,8 +10,6 @@ import 'package:flutter_fundraising_goal_chart/core/utils/constants/custom_app_b
 import 'package:flutter_fundraising_goal_chart/models/user_model.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
 import 'package:flutter_fundraising_goal_chart/views/auth/forgot_password.dart';
-import 'package:flutter_fundraising_goal_chart/views/auth/sign_up.dart';
-import 'package:flutter_fundraising_goal_chart/views/fundraising/fundraising_setup_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -82,6 +80,8 @@ class _SingInPageState extends State<SingInPage> {
 
   @override
   Widget build(BuildContext context) {
+    _emailController.text='suleymansurucu95@gmail.com';
+    _passwordController.text='123456';
     final UserViewModels userViewModels =
         Provider.of<UserViewModels>(context, listen: false);
     return Scaffold(

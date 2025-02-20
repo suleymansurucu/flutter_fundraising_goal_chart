@@ -17,10 +17,12 @@ class DonationEntryPage extends StatefulWidget {
 class _DonationEntryPageState extends State<DonationEntryPage> {
   List<String> list = [];
   String? thisFundraising;
+  String? FundraisingID;
+  late final String userID;
 
   // 🔹 Text Controllers
   final TextEditingController _donationAmountController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController _donorNameController = TextEditingController();
 
   @override
@@ -31,26 +33,43 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
 
   void fetchData() async {
     final fundraisingViewModels =
-    Provider.of<FundraisingViewModels>(context, listen: false);
+        Provider.of<FundraisingViewModels>(context, listen: false);
     final userViewModels = Provider.of<UserViewModels>(context, listen: false);
-    final String userID = userViewModels.userModel!.userID;
+    userID = userViewModels.userModel!.userID;
 
-    List<String>? fetchedList =
-    await fundraisingViewModels.fetchFundraisingCommunity(userID)
-    as List<String>;
+    List<String>? fetchedList = await fundraisingViewModels
+        .fetchFundraisingCommunity(userID) as List<String>;
 
     if (fetchedList != null && fetchedList.isNotEmpty) {
       setState(() {
         list = fetchedList;
         thisFundraising = list[0]; // Default selection
       });
+
+      fundraisingViewModels.fetchFundraising(userID);
+      var result = await fundraisingViewModels.getFundraisingIDByCommunityName(
+          userID, thisFundraising!);
+
+      // Update the state with the fundraising ID
+      setState(() {
+        FundraisingID = result;
+      });
     }
   }
 
   // 🔹 Function to update dropdown selection
-  void _onFundraising(String value) {
+  void _onFundraising(String value) async {
+    // Asenkron işlemi burada yapıyoruz
+    thisFundraising = value;
+    final fundraisingViewModels =
+        Provider.of<FundraisingViewModels>(context, listen: false);
+    var result = await fundraisingViewModels.getFundraisingIDByCommunityName(
+        userID, thisFundraising!);
+    debugPrint('Bakalim olacak mi $result');
+
+    // Sonuç alındıktan sonra UI'yi güncelliyoruz
     setState(() {
-      thisFundraising = value;
+      FundraisingID = result;
     });
   }
 
@@ -59,6 +78,13 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
     print('Selected Fundraising: $thisFundraising');
     print('Donor Name: ${_donorNameController.text}');
     print('Donation Amount: ${_donationAmountController.text}');
+
+    double? donationAmount = double.tryParse(_donationAmountController.text);
+
+    final fundraisingViewModels =
+        Provider.of<FundraisingViewModels>(context, listen: false);
+    fundraisingViewModels.userRepository.saveDonation(userID, FundraisingID!,
+        thisFundraising!, _donorNameController.text, donationAmount!);
   }
 
   @override
@@ -109,7 +135,7 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
                       width: 400,
                       decoration: BoxDecoration(
                         border:
-                        Border.all(color: Constants.primary, width: 1.5),
+                            Border.all(color: Constants.primary, width: 1.5),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 10),
