@@ -71,7 +71,7 @@ class BuildDrawMenu extends StatelessWidget {
                   ListTile(
                     title: const Text('Previous Fundraising Display Chart',style: TextStyle(fontSize: 14),),
                     onTap: () {
-                      context.push(RouteNames.fundraisingSetup);
+                      context.push(RouteNames.allFundraisingShowList);
                     },
                   ),
                   ListTile(
