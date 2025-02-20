@@ -3,6 +3,8 @@ import 'package:flutter_fundraising_goal_chart/views/auth/sign_up.dart';
 import 'package:flutter_fundraising_goal_chart/views/auth/sing_in.dart';
 import 'package:flutter_fundraising_goal_chart/views/auth/user_profile.dart';
 import 'package:flutter_fundraising_goal_chart/views/donation/donation_entry_page.dart';
+import 'package:flutter_fundraising_goal_chart/views/fundraising/all_fundraising_show_list.dart';
+import 'package:flutter_fundraising_goal_chart/views/fundraising/display_fundraising_chart.dart';
 import 'package:flutter_fundraising_goal_chart/views/fundraising/fundraising_setup_page.dart';
 import 'package:flutter_fundraising_goal_chart/views/home/home_page.dart';
 import 'package:flutter_fundraising_goal_chart/views/landing_page.dart';
@@ -43,5 +45,21 @@ final GoRouter appRouter = GoRouter(initialLocation: '/landing-page', routes: [
     path: RouteNames.userProfile,
     name: RouteNames.userProfile,
     builder: (context, state) => UserProfile(),
+  ),
+  GoRoute(
+    path: RouteNames.allFundraisingShowList,
+    name: RouteNames.allFundraisingShowList,
+    builder: (context, state) => AllFundraisingShowList(),
+  ),
+  GoRoute(
+    path: '/display-chart/:fundraisingID/:userID',
+    builder: (context, state) {
+      final String fundraisingID = state.pathParameters['fundraisingID']!;
+      final String userID = state.pathParameters['userID']!;
+      return DisplayFundraisingChart(
+        fundraisingID: fundraisingID,
+        userID: userID,
+      );
+    },
   ),
 ]);
