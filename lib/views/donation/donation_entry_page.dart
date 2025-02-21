@@ -1,10 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_Text_Form_Field.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_elevated_button.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_text_for_form.dart';
+import 'package:flutter_fundraising_goal_chart/models/donation_model.dart';
+import 'package:flutter_fundraising_goal_chart/view_models/donation_view_models.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/fundraising_view_models.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 class DonationEntryPage extends StatefulWidget {
@@ -81,10 +85,23 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
 
     double? donationAmount = double.tryParse(_donationAmountController.text);
 
-    final fundraisingViewModels =
+    final donationViewModels =
+        Provider.of<DonationViewModels>(context, listen: false);
+
+    DonationModel donationModel = DonationModel(
+        communityName: thisFundraising!,
+        donationAmount: donationAmount!,
+        donorName: _donorNameController.text,
+        fundraisingID: FundraisingID!,
+        userID: userID,
+        timestamp: Timestamp.now());
+
+    donationViewModels.addDonation(donationModel);
+
+    /*final fundraisingViewModels =
         Provider.of<FundraisingViewModels>(context, listen: false);
     fundraisingViewModels.userRepository.saveDonation(userID, FundraisingID!,
-        thisFundraising!, _donorNameController.text, donationAmount!);
+        thisFundraising!, _donorNameController.text, donationAmount!);*/
   }
 
   @override

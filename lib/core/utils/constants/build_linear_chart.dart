@@ -36,7 +36,7 @@ class _BuildLinearChartState extends State<BuildLinearChart> {
                       fontWeight: FontWeight.w400),
                 ),
                 Text(
-                  '\$${widget.totalDonated.toString()}',
+                  '\$${widget.totalDonated.toStringAsFixed(2)}',
                   style: TextStyle(
                       color: Colors.green,
                       fontSize: 30,
@@ -54,7 +54,7 @@ class _BuildLinearChartState extends State<BuildLinearChart> {
                       fontWeight: FontWeight.w400),
                 ),
                 Text(
-                  '\$${widget.fundraisingTarget.toString()}',
+                  '\$${widget.fundraisingTarget.toStringAsFixed(2)}',
                   style: TextStyle(
                       color: Colors.red,
                       fontSize:30,

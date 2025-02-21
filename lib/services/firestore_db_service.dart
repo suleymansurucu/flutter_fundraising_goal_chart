@@ -216,13 +216,15 @@ class FirestoreDbService implements FirestoreDbBase {
   }
 
   @override
-  Future<FundraisingModel?> getFundraiser(String userID,String fundraisingID) async {
+  Future<FundraisingModel?> getFundraiser(
+      String userID, String fundraisingID) async {
     try {
-      DocumentSnapshot _readFundraiser =
-          await _firebaseFirestore.doc('users/$userID/fundraiser/$fundraisingID').get();
+      DocumentSnapshot _readFundraiser = await _firebaseFirestore
+          .doc('users/$userID/fundraiser/$fundraisingID')
+          .get();
 
       Map<String, dynamic>? _readFundraiserMap =
-      _readFundraiser.data() as Map<String, dynamic>;
+          _readFundraiser.data() as Map<String, dynamic>;
 
       debugPrint('ben get Fundraiser ${_readFundraiserMap.toString()}');
 
@@ -233,4 +235,20 @@ class FirestoreDbService implements FirestoreDbBase {
     }
   }
 
+  Future<FundraisingModel?> getAllFundraiserTarget(
+      String userID, String fundraisingID) async {
+    var documentFundraiser = await _firebaseFirestore
+        .doc('users/$userID/fundraiser/$fundraisingID')
+        .get();
+
+    Map<String, dynamic> mapFundraiser =
+        documentFundraiser.data() as Map<String, dynamic>;
+
+    FundraisingModel fundraisingModel=FundraisingModel.fromMap(mapFundraiser);
+
+
+
+
+
+  }
 }

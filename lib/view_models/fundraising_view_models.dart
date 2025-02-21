@@ -114,4 +114,24 @@ class FundraisingViewModels with ChangeNotifier {
       return null;
     }
   }
+
+  Future<double?> getAllFundraiserTarget(
+      String userID, String fundraisingID) async {
+    try {
+      _setState(ViewState.Busy);
+      var fundraisingModel =
+          await userRepository.getFundraiser(userID, fundraisingID);
+      double allCommunityFundraisingTarget = 0;
+      for (var fundraiser in fundraisingModel!.communities) {
+        allCommunityFundraisingTarget =
+            fundraiser.goal + allCommunityFundraisingTarget;
+      }
+      _setState(ViewState.Idle);
+      debugPrint(allCommunityFundraisingTarget.toString());
+      return allCommunityFundraisingTarget;
+    } catch (e) {
+      _setState(ViewState.Idle);
+      return null;
+    }
+  }
 }

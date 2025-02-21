@@ -72,3 +72,11 @@ class _BuildPieChartState extends State<BuildPieChart> {
     );
   }
 }
+
+/*BuildPieChart(
+                                  targetProgress:
+                                      donationViewModels.targetProgress,
+                                  fundraisingTarget:
+                                      widget.fundraisingTarget ?? 0,
+                                  totalDonated:
+                                      donationViewModels.totalDonated),*/

@@ -34,7 +34,10 @@ class DonationViewModels with ChangeNotifier {
     if (value>100) {
       value=100;
     }
-
     return  value;
+  }
+  double get totalDonated{
+    double totalDonated = _donations.fold(0, (sum, donation) {return sum + donation.donationAmount;});
+    return totalDonated;
   }
 }
