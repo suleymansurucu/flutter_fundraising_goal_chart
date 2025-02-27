@@ -46,6 +46,8 @@ dependencies:
   pie_chart: ^5.4.0
   syncfusion_flutter_charts: ^28.2.6
   gauge_indicator: ^0.4.3
+  flutter_screenutil: ^5.9.3
+
 
 
 

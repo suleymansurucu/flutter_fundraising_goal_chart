@@ -58,7 +58,7 @@ class _SingInPageState extends State<SingInPage> {
           margin: EdgeInsets.all(20),
         ).show(context);
 
-        context.push(RouteNames.fundraisingSetup);
+        context.go(RouteNames.fundraisingSetup);
       }
 
       debugPrint(user!.userID);
@@ -68,7 +68,7 @@ class _SingInPageState extends State<SingInPage> {
   }
 
   void _signUp() {
-    context.push(RouteNames.signUp);
+    context.go(RouteNames.signUp);
   }
 
   @override

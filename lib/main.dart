@@ -7,6 +7,7 @@ import 'package:flutter_fundraising_goal_chart/view_models/donation_view_models.
 import 'package:flutter_fundraising_goal_chart/view_models/fundraising_view_models.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
 import 'package:flutter_fundraising_goal_chart/views/landing_page.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -32,10 +33,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: appRouter,
-      debugShowCheckedModeBanner: false,
-
-    );
+    return ScreenUtilInit(
+        designSize: Size(3072, 1920),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (_, widget) {
+          return MaterialApp.router(
+            routerConfig: appRouter,
+            debugShowCheckedModeBanner: false,
+          );
+        });
   }
 }

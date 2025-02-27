@@ -17,14 +17,25 @@ class LandingPage extends StatelessWidget {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
-        } else if (snapshot.hasData) {
-          context.go(RouteNames.fundraisingSetup);
+        }
+
+        // Kullanıcı giriş yapmışsa fundraising sayfasına yönlendir
+        if (snapshot.hasData) {
+          final currentUri = GoRouterState.of(context).uri.toString(); // Mevcut URL'yi al
+          if (!currentUri.contains(RouteNames.fundraisingSetup)) {
+            context.go('${RouteNames.fundraisingSetup}$currentUri'); // Parametreleri koruyarak yönlendir
+          }
           return const FundraisingSetupPage();
-        } else {
-          context.go(RouteNames.singIn);
+        }
+
+        // Kullanıcı giriş yapmamışsa giriş sayfasına yönlendir
+        else {
+          final currentUri = GoRouterState.of(context).uri.toString(); // Mevcut URL'yi al
+          if (!currentUri.contains(RouteNames.singIn)) {
+            context.go('${RouteNames.singIn}?redirect=$currentUri'); // Kullanıcı giriş yapınca geri dönmesini sağla
+          }
           return const SingInPage();
         }
       },
     );
-  }
-}
+  }}
