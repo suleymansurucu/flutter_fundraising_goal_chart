@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
+import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_elevated_button.dart';
 import 'package:flutter_fundraising_goal_chart/locator.dart';
 import 'package:flutter_fundraising_goal_chart/models/fundraising_model.dart';
 import 'package:flutter_fundraising_goal_chart/services/user_repository.dart';
+import 'package:flutter_fundraising_goal_chart/view_models/donation_view_models.dart';
+import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 enum ViewState { Busy, Idle }
@@ -133,5 +138,164 @@ class FundraisingViewModels with ChangeNotifier {
       _setState(ViewState.Idle);
       return null;
     }
+  }
+
+  String? _uniqueName;
+
+  String? get uniqueName => _uniqueName;
+  String? _slogan;
+
+  String? get slogan => _slogan;
+  String? _currency;
+
+  String? get currency => _currency;
+
+  String? _showDonorNames;
+
+  String? get showDonorNames => _showDonorNames;
+  String? _showDonorAmount;
+
+  String? get showDonorAmount => _showDonorAmount;
+  String? _graphicType;
+
+  String? get graphicType => _graphicType;
+  List<CommunityFundraising>? communities;
+
+  int? _communityCount;
+
+  int? get communityCount => _communityCount;
+
+  double? _fundraiserTarget;
+
+  double? get fundraiserTarget => _fundraiserTarget;
+  String? _communityName;
+
+  String? get communityName => _communityName;
+
+  set communityName(String? newName) {
+    if (_communityName != newName) {
+      _communityName = newName;
+      notifyListeners(); // UI'nin güncellenmesini sağlar!
+    }
+  }
+
+  void getFundraisingScreen(String userID, String fundraisingID) async {
+    var snapshot = await userRepository.getFundraiser(userID, fundraisingID);
+
+    var generalFundraiserTarget =
+        await getAllFundraiserTarget(userID, fundraisingID);
+
+    _uniqueName = snapshot!.uniqueName;
+    _currency = snapshot.currency;
+    _showDonorNames = snapshot.showDonorNames;
+    _showDonorAmount = snapshot.showDonorAmount;
+    _graphicType = snapshot.graphicType;
+    _fundraiserTarget = generalFundraiserTarget;
+    _slogan = snapshot.slogan;
+
+    _communityCount = snapshot.communities.length;
+    _communityName = snapshot.uniqueName;
+
+    notifyListeners();
+  }
+
+  Widget getCommunitiesButton(String userID, String fundraisingID) {
+    return FutureBuilder<FundraisingModel?>(
+      future: getFundraiser(userID, fundraisingID),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return CircularProgressIndicator();
+        }
+
+        List<Widget> buttons = snapshot.data!.communities.map((community) {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4),
+            child: snapshot.data!.communities.length == 1
+                ? SizedBox()
+                : BuildElevatedButton(
+                    onPressed: () {
+                      _communityName = community.name;
+                      _fundraiserTarget = community.goal;
+                      final donationViewModel = Provider.of<DonationViewModels>(
+                          context,
+                          listen: false);
+                      donationViewModel.listenToDonations(userID, fundraisingID,
+                          _communityName!, communityCount!);
+                    },
+                    buttonText: community.name,
+                    buttonColor: Colors.grey.shade200,
+                    textColor: Constants.textColor),
+          );
+        }).toList();
+
+        if (snapshot.data!.communities.length > 1) {
+          buttons.add(Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: BuildElevatedButton(
+                onPressed: () async {
+                  var allTarget =
+                      await getAllFundraiserTarget(userID, fundraisingID);
+                  _communityName = snapshot.data!.uniqueName;
+                  _fundraiserTarget = allTarget;
+
+                  final donationViewModel =
+                      Provider.of<DonationViewModels>(context, listen: false);
+                  donationViewModel.listenToDonations(
+                      userID, fundraisingID, 'general', communityCount!);
+                },
+                buttonText: 'General',
+                buttonColor: Colors.grey.shade200,
+                textColor: Constants.textColor),
+          ));
+        }
+
+        notifyListeners();
+
+        return Wrap(
+          spacing: 8.0,
+          children: buttons,
+        );
+      },
+    );
+  }
+
+  List<String>? _list = [];
+
+  List<String>? get list => _list;
+  String? _thisFundraising;
+
+  String? get thisFundraising => _thisFundraising;
+  String? _fundraisingID;
+
+  String? get fundraisingID => _fundraisingID;
+
+  void fetchData() async {
+    var userID = userRepository.firebaseAuthService.currentUser!.uid;
+
+    List<String>? fetchedList =
+        await fetchFundraisingCommunity(userID) as List<String>;
+
+    if (fetchedList != null && fetchedList.isNotEmpty) {
+      _list = fetchedList;
+      _thisFundraising = _list![0]; // Default selection
+    }
+
+    var result =
+        await getFundraisingIDByCommunityName(userID, _thisFundraising!);
+
+    // Update the state with the fundraising ID
+    _fundraisingID = result;
+    notifyListeners();
+  }
+
+// 🔹 Function to update dropdown selection
+  Future<void> _onFundraising(String value) async {
+    _thisFundraising = value;
+    var userID = userRepository.firebaseAuthService.currentUser!.uid;
+
+    var result =
+        await getFundraisingIDByCommunityName(userID, _thisFundraising!);
+    _fundraisingID = result;
+    notifyListeners();
   }
 }

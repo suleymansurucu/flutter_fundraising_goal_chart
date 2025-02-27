@@ -46,14 +46,14 @@ class BuildDrawMenu extends StatelessWidget {
                 leading: const Icon(Icons.home, color: Colors.black),
                 title: const Text('Home'),
                 onTap: () {
-                  context.push(RouteNames.home);
+                  context.go(RouteNames.home);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.info, color: Colors.black),
                 title: const Text('Profile'),
                 onTap: () {
-                  context.push(RouteNames.userProfile);
+                  context.go(RouteNames.userProfile);
                 },
               ),
               ExpansionTile(
@@ -65,19 +65,19 @@ class BuildDrawMenu extends StatelessWidget {
 
                     title: const Text('Create New Fundraising Display Chart',style: TextStyle(fontSize: 14),),
                     onTap: () {
-                      context.push(RouteNames.fundraisingSetup);
+                      context.go(RouteNames.fundraisingSetup);
                     },
                   ),
                   ListTile(
                     title: const Text('Previous Fundraising Display Chart',style: TextStyle(fontSize: 14),),
                     onTap: () {
-                      context.push(RouteNames.allFundraisingShowList);
+                      context.go(RouteNames.allFundraisingShowList);
                     },
                   ),
                   ListTile(
                     title: const Text('Donation Enter For Fundraising',style: TextStyle(fontSize: 14),),
                     onTap: () {
-                      context.push(RouteNames.entryDonation);
+                      context.go(RouteNames.entryDonation);
                     },
                   ),
                 ],
@@ -91,8 +91,8 @@ class BuildDrawMenu extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                   fullName != null && fullName!.isNotEmpty
-                      ? context.push(RouteNames.signUp)
-                      : context.push(RouteNames.singIn);
+                      ? context.go(RouteNames.signUp)
+                      : context.go(RouteNames.singIn);
                 },
               ),
             ],

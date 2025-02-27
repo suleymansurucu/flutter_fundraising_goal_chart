@@ -12,7 +12,7 @@ enum CurrencyDropDownList {
 }
 
 enum GraphicTypeDropDownList {
-  progressBar('Progress Bar', Icons.battery_4_bar_rounded),
+  // progressBar('Progress Bar', Icons.battery_4_bar_rounded),
   pieChart('Pie Chart', Icons.change_circle_rounded),
   gaugeChart('Gauge Chart', Icons.network_wifi_3_bar_sharp);
 

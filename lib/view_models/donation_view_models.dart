@@ -16,12 +16,39 @@ class DonationViewModels with ChangeNotifier {
   List<DonationModel> _donations = [];
 
   List<DonationModel> get donations => _donations;
+  StreamSubscription<List<DonationModel>>? _donationSubscription;
 
-  void listenToDonations(String userID, String fundraisingID) {
-    donationService.getDonations(userID, fundraisingID).listen((donationList) {
-      _donations = donationList;
-      notifyListeners();
-    });
+  void listenToDonations(String userID, String fundraisingID,
+      String communityName, int communityCount) {
+
+    // Önceki aboneliği güvenli bir şekilde iptal et
+    _donationSubscription?.cancel();
+    _donationSubscription = null; // Güvenliği artırmak için null atıyoruz.
+
+    debugPrint('📢 Yeni bağışları dinlemeye başlıyoruz...');
+    debugPrint('👥 Community Name: $communityName');
+    debugPrint('🌍 Community Count: $communityCount');
+
+    try {
+      _donationSubscription = donationService
+          .getDonations(userID, fundraisingID, communityName, communityCount)
+          .listen((donationList) {
+        debugPrint('🔥 Bağış listesi güncellendi: ${donationList.length} adet bağış alındı.');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _donations = donationList;
+          notifyListeners();
+        });
+      });
+    } catch (e, stackTrace) {
+      debugPrint('❌ Firestore dinleme hatası: $e');
+      debugPrint(stackTrace.toString());
+    }
+  }
+
+  @override
+  void dispose() {
+    _donationSubscription?.cancel();
+    super.dispose();
   }
 
   Future<void> addDonation(DonationModel donationModel) async {
@@ -29,15 +56,20 @@ class DonationViewModels with ChangeNotifier {
   }
 
   double get targetProgress {
-    double totalDonated = _donations.fold(0, (sum, donation) {return sum + donation.donationAmount;});
-    double value=(totalDonated / 100000) * 100;
-    if (value>100) {
-      value=100;
+    double totalDonated = _donations.fold(0, (sum, donation) {
+      return sum + donation.donationAmount;
+    });
+    double value = (totalDonated / 100000) * 100;
+    if (value > 100) {
+      value = 100;
     }
-    return  value;
+    return value;
   }
-  double get totalDonated{
-    double totalDonated = _donations.fold(0, (sum, donation) {return sum + donation.donationAmount;});
+
+  double get totalDonated {
+    double totalDonated = _donations.fold(0, (sum, donation) {
+      return sum + donation.donationAmount;
+    });
     return totalDonated;
   }
 }

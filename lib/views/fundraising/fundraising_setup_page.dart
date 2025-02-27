@@ -22,8 +22,7 @@ class _FundraisingSetupPageState extends State<FundraisingSetupPage> {
   CurrencyDropDownList _selectedCurrency = CurrencyDropDownList.dollar;
   YesOrNoDropDownList _selectedYesOrNoForDonorNames = YesOrNoDropDownList.yes;
   YesOrNoDropDownList _selectedYesOrNoForDonorAmount = YesOrNoDropDownList.yes;
-  GraphicTypeDropDownList _selectedgraphicType =
-      GraphicTypeDropDownList.progressBar;
+  GraphicTypeDropDownList _selectedgraphicType =GraphicTypeDropDownList.gaugeChart;
   final GlobalKey<ScaffoldState> _scafoldFundraisingSetupPage =
       GlobalKey<ScaffoldState>();
 

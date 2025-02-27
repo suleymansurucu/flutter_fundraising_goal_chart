@@ -20,20 +20,40 @@ class DonationService {
     }
   }
 
-  Stream<List<DonationModel>> getDonations(
-      String userID, String fundraisingID) {
-    return firestore
-        .collection('users')
-        .doc(userID)
-        .collection('fundraiser')
-        .doc(fundraisingID)
-        .collection('donations')
-        .orderBy('timestamp', descending: true)
-        .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        return DonationModel.fromMap(doc.data());
-      }).toList();
-    });
+  Stream<List<DonationModel>> getDonations(String userID, String fundraisingID,
+      String? communityName, int? communityCount) {
+    if (communityName == 'general') {
+      var query = firestore
+          .collection('users')
+          .doc(userID)
+          .collection('fundraiser')
+          .doc(fundraisingID)
+          .collection('donations')
+          .orderBy('timestamp', descending: true);
+      return query.snapshots().map((snapshot) => snapshot.docs.map((doc) {
+            var donation = DonationModel.fromMap(doc.data());
+            debugPrint('Database servis: ${donation.toString()}');
+            return donation;
+          }).toList());
+    } else {
+      var query = firestore
+          .collection('users')
+          .doc(userID)
+          .collection('fundraiser')
+          .doc(fundraisingID)
+          .collection('donations')
+          .where('communityName', isEqualTo: communityName)
+          .orderBy('timestamp', descending: true);
+
+      //where('communityName', isEqualTo: communityName);
+
+      debugPrint('CommunityCounti aliyoruz? ${communityCount.toString()}');
+
+      return query.snapshots().map((snapshot) => snapshot.docs.map((doc) {
+            var donation = DonationModel.fromMap(doc.data());
+            debugPrint('Database servis: ${donation.toString()}');
+            return donation;
+          }).toList());
+    }
   }
 }

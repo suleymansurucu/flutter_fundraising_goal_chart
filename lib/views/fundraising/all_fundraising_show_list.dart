@@ -65,7 +65,7 @@ class _AllFundraisingShowListState extends State<AllFundraisingShowList> {
                     subtitle: BuildElevatedButton(
                       onPressed: () {
                         final fundraisingID = fundraiser.fundraisingID;
-                        context.push('/display-chart/$fundraisingID/$userID');
+                        context.go('/display-chart/$fundraisingID/$userID');
                       },
                       buttonText: 'Click to Display Goal Chart',
                       buttonColor: Constants.accent,

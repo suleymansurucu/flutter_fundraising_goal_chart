@@ -1,6 +1,8 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 class BuildLinearChart extends StatefulWidget {
   double targetProgress;
@@ -20,8 +22,8 @@ class BuildLinearChart extends StatefulWidget {
 class _BuildLinearChartState extends State<BuildLinearChart> {
   @override
   Widget build(BuildContext context) {
+    var oCcy = NumberFormat("#,##0.00", "en_US");
     return Column(
-
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -30,16 +32,17 @@ class _BuildLinearChartState extends State<BuildLinearChart> {
               children: [
                 Text(
                   'Reached:',
+                  textAlign: TextAlign.end,
                   style: TextStyle(
                       color: Colors.green,
-                      fontSize: 18,
+                      fontSize: 40.sp,
                       fontWeight: FontWeight.w400),
                 ),
                 Text(
-                  '\$${widget.totalDonated.toStringAsFixed(2)}',
+                  '\$${oCcy.format(widget.totalDonated)}',
                   style: TextStyle(
                       color: Colors.green,
-                      fontSize: 30,
+                      fontSize: 80.sp,
                       fontWeight: FontWeight.w900),
                 )
               ],
@@ -48,16 +51,17 @@ class _BuildLinearChartState extends State<BuildLinearChart> {
               children: [
                 Text(
                   'Goal:',
+                  textAlign: TextAlign.start,
                   style: TextStyle(
                       color: Colors.red,
-                      fontSize: 18,
+                      fontSize: 40.sp,
                       fontWeight: FontWeight.w400),
                 ),
                 Text(
-                  '\$${widget.fundraisingTarget.toStringAsFixed(2)}',
+                  '\$${oCcy.format(widget.fundraisingTarget)}',
                   style: TextStyle(
                       color: Colors.red,
-                      fontSize:30,
+                      fontSize: 80.sp,
                       fontWeight: FontWeight.w900),
                 )
               ],
@@ -65,20 +69,20 @@ class _BuildLinearChartState extends State<BuildLinearChart> {
           ],
         ),
         SizedBox(
-          width: MediaQuery.sizeOf(context).width*0.9,
+          //width: double.infinity.w,
           child: Stack(
             alignment: AlignmentDirectional.center,
             children: [
               LinearProgressIndicator(
                 backgroundColor: Colors.grey.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(40),
+                borderRadius: BorderRadius.circular(180.w),
                 color: Colors.green,
-                minHeight: 20,
+                minHeight: 40.w,
                 value: widget.targetProgress / 100,
               ),
               Text(
                 '${(widget.targetProgress).toInt()}%',
-                style: const TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 40.sp, fontWeight: FontWeight.bold),
               ),
             ],
           ),

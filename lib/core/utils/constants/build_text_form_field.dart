@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class BuildTextFormField extends StatefulWidget {
   final TextEditingController textEditingController;
@@ -12,6 +13,9 @@ class BuildTextFormField extends StatefulWidget {
   final FormFieldSetter<String>? onSaved;
   final String? Function(String?)? validator;
   final String? errorText;
+  final List<TextInputFormatter>? inputFormatters;
+
+
 
 
   const BuildTextFormField({
@@ -26,6 +30,7 @@ class BuildTextFormField extends StatefulWidget {
     this.onSaved,
     this.validator,
     this.errorText,
+    this.inputFormatters,
     super.key,
   });
 
@@ -39,6 +44,7 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
     return TextFormField(
       controller: widget.textEditingController,
       keyboardType: widget.keyBoardType,
+      inputFormatters: widget.inputFormatters,
       decoration: InputDecoration(
         labelText: widget.labelText,
         hintText: widget.hintText,
