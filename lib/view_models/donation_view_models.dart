@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_fundraising_goal_chart/locator.dart';
 import 'package:flutter_fundraising_goal_chart/models/donation_model.dart';
-import 'package:flutter_fundraising_goal_chart/models/fundraising_model.dart';
 import 'package:flutter_fundraising_goal_chart/services/donation_service.dart';
 
 class DonationViewModels with ChangeNotifier {
@@ -18,9 +17,39 @@ class DonationViewModels with ChangeNotifier {
   List<DonationModel> get donations => _donations;
   StreamSubscription<List<DonationModel>>? _donationSubscription;
 
+  String? donorNameError;
+  String? donorAmountError;
+
+  bool validateForm(TextEditingController donorNameController,
+      TextEditingController donorAmountController) {
+    bool isValid = true;
+
+    if (donorNameController.text.trim().isEmpty) {
+      donorNameError = 'Donor name is required';
+      isValid = false;
+    } else if (donorNameController.text.trim().length < 3) {
+      donorNameError = 'Donor name must be at least 3 characters';
+      isValid = false;
+    } else if (!RegExp(r"^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$")
+        .hasMatch(donorNameController.text.trim())) {
+      donorNameError = "Donor name must contain only letters!";
+      isValid = false;
+    } else {
+      donorNameError = null;
+    }
+    if (donorAmountController.text.trim().isEmpty) {
+      donorAmountError = 'Donor Amount is required';
+      isValid = false;
+    }  else {
+      donorAmountError = null; // Clear error if valid
+    }
+
+    notifyListeners();
+    return isValid;
+  }
+
   void listenToDonations(String userID, String fundraisingID,
       String communityName, int communityCount) {
-
     // Önceki aboneliği güvenli bir şekilde iptal et
     _donationSubscription?.cancel();
     _donationSubscription = null; // Güvenliği artırmak için null atıyoruz.
@@ -33,7 +62,8 @@ class DonationViewModels with ChangeNotifier {
       _donationSubscription = donationService
           .getDonations(userID, fundraisingID, communityName, communityCount)
           .listen((donationList) {
-        debugPrint('🔥 Bağış listesi güncellendi: ${donationList.length} adet bağış alındı.');
+        debugPrint(
+            '🔥 Bağış listesi güncellendi: ${donationList.length} adet bağış alındı.');
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _donations = donationList;
           notifyListeners();

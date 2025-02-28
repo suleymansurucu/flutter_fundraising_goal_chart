@@ -80,6 +80,12 @@ class BuildDrawMenu extends StatelessWidget {
                       context.go(RouteNames.entryDonation);
                     },
                   ),
+                  ListTile(
+                    title: const Text('List Of Donations',style: TextStyle(fontSize: 14),),
+                    onTap: () {
+                      context.go(RouteNames.donationList);
+                    },
+                  ),
                 ],
               ),
               const Divider(),

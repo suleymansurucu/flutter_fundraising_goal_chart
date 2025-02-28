@@ -8,6 +8,7 @@ class RouteNames {
   static const String userProfile = '/user-profile';
   static const String entryDonation = '/entry-donation';
   static const String allFundraisingShowList = '/all-fundraiser';
+  static const String donationList = '/donation-list';
 
 
 }

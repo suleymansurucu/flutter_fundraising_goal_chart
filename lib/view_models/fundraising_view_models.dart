@@ -269,7 +269,7 @@ class FundraisingViewModels with ChangeNotifier {
 
   String? get fundraisingID => _fundraisingID;
 
-  void fetchData() async {
+   fetchData() async {
     var userID = userRepository.firebaseAuthService.currentUser!.uid;
 
     List<String>? fetchedList =
@@ -285,11 +285,12 @@ class FundraisingViewModels with ChangeNotifier {
 
     // Update the state with the fundraising ID
     _fundraisingID = result;
+
     notifyListeners();
   }
 
 // 🔹 Function to update dropdown selection
-  Future<void> _onFundraising(String value) async {
+  Future<void> onFundraising(String value) async {
     _thisFundraising = value;
     var userID = userRepository.firebaseAuthService.currentUser!.uid;
 

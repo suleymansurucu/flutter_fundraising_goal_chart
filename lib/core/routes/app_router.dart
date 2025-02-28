@@ -5,6 +5,7 @@ import 'package:flutter_fundraising_goal_chart/views/auth/sign_up.dart';
 import 'package:flutter_fundraising_goal_chart/views/auth/sing_in.dart';
 import 'package:flutter_fundraising_goal_chart/views/auth/user_profile.dart';
 import 'package:flutter_fundraising_goal_chart/views/donation/donation_entry_page.dart';
+import 'package:flutter_fundraising_goal_chart/views/donation/donation_list_page.dart';
 import 'package:flutter_fundraising_goal_chart/views/fundraising/all_fundraising_show_list.dart';
 import 'package:flutter_fundraising_goal_chart/views/fundraising/display_fundraising_chart.dart';
 import 'package:flutter_fundraising_goal_chart/views/fundraising/fundraising_setup_page.dart';
@@ -87,6 +88,11 @@ final GoRouter appRouter = GoRouter(
           userID: userID,
         );
       },
+    ),
+    GoRoute(
+      path: RouteNames.donationList,
+      name: RouteNames.donationList,
+      builder: (context, state) => const DonationListPage(),
     ),
   ],
 );
