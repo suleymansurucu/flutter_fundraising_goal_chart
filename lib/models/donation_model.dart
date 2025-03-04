@@ -7,6 +7,7 @@ class DonationModel {
   String fundraisingID;
   String userID;
   Timestamp? timestamp;
+  String donationID;
 
   DonationModel(
       {required this.communityName,
@@ -14,6 +15,7 @@ class DonationModel {
       required this.donorName,
       required this.fundraisingID,
       required this.userID,
+      required this.donationID,
       required this.timestamp});
 
   Map<String, dynamic> toMap() {
@@ -23,7 +25,8 @@ class DonationModel {
       'donorName': donorName,
       'fundraisingID': fundraisingID,
       'userID': userID,
-      'timestamp': timestamp ?? Timestamp.now()
+      'timestamp': timestamp ?? Timestamp.now(),
+      'donationID': donationID
     };
   }
 
@@ -34,11 +37,12 @@ class DonationModel {
         donorName: map['donorName'] as String,
         fundraisingID: map['fundraisingID'] as String,
         userID: map['userID'] as String,
+        donationID: map['donationID'] as String,
         timestamp: map['timestamp'] as Timestamp);
   }
 
   @override
   String toString() {
-    return 'DonationModel{communityName: $communityName, donationAmount: $donationAmount, donorName: $donorName, fundraisingID: $fundraisingID, userID: $userID}';
+    return 'DonationModel{donationID:$donationID,communityName: $communityName, donationAmount: $donationAmount, donorName: $donorName, fundraisingID: $fundraisingID, userID: $userID}';
   }
 }

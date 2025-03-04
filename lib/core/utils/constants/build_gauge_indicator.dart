@@ -8,11 +8,13 @@ class BuildGaugeIndicator extends StatefulWidget {
   double targetProgress;
   double fundraisingTarget;
   double totalDonated;
+  double realTargetProgress;
 
   BuildGaugeIndicator(
       {required this.fundraisingTarget,
       required this.totalDonated,
       required this.targetProgress,
+      required this.realTargetProgress,
       super.key});
 
   @override
@@ -22,15 +24,20 @@ class BuildGaugeIndicator extends StatefulWidget {
 class _BuildGaugeIndicatorState extends State<BuildGaugeIndicator> {
   @override
   Widget build(BuildContext context) {
+    debugPrint('Fundraising Target : ${widget.fundraisingTarget}');
+    debugPrint('Toplam Donate : ${widget.totalDonated}');
+    debugPrint('Proggress : ${widget.targetProgress}');
 
     return Expanded(
         child: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         BuildLinearChart(
-            fundraisingTarget: widget.fundraisingTarget,
-            totalDonated: widget.totalDonated,
-            targetProgress: widget.targetProgress),
+          fundraisingTarget: widget.fundraisingTarget,
+          totalDonated: widget.totalDonated,
+          targetProgress: widget.targetProgress,
+          realTargetProgress: widget.realTargetProgress,
+        ),
         SizedBox(height: 30.w),
         Expanded(
           child: AnimatedRadialGauge(
@@ -78,13 +85,12 @@ class _BuildGaugeIndicatorState extends State<BuildGaugeIndicator> {
           height: 4.w,
         ),
         Text(
-          '${widget.targetProgress.toStringAsFixed(1)}%',
+          '${widget.realTargetProgress.toStringAsFixed(1)}%',
           style: TextStyle(
               fontSize: 120.sp,
               fontWeight: FontWeight.bold,
               color: Colors.green),
         ),
-
       ],
     ));
   }

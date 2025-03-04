@@ -17,7 +17,8 @@ class DisplayFundraisingChart extends StatefulWidget {
   final String userID;
   String? communityName;
   double? fundraisingTarget = 0;
-  late double totalDonated;
+  double? totalDonated;
+  double? reachedDonated;
 
   DisplayFundraisingChart(
       {super.key, required this.fundraisingID, required this.userID});
@@ -85,7 +86,6 @@ class _DisplayFundraisingChartState extends State<DisplayFundraisingChart> {
 
   @override
   Widget build(BuildContext context) {
-
     final DonationViewModels donationViewModels =
         Provider.of<DonationViewModels>(context);
     return Consumer<FundraisingViewModels>(
@@ -133,26 +133,38 @@ class _DisplayFundraisingChartState extends State<DisplayFundraisingChart> {
                               Text(
                                 fundraisingViewModels.communityName.toString(),
                                 style: TextStyle(
-                                    fontSize: 50.sp, color: Constants.primary, fontWeight: FontWeight.bold, ),
+                                  fontSize: 50.sp,
+                                  color: Constants.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
 
                               fundraisingViewModels.graphicType.toString() ==
                                       GraphicTypeDropDownList.pieChart.label
                                   ? BuildPieChart(
-                                      targetProgress:
-                                          donationViewModels.targetProgress,
+                                      targetProgress: donationViewModels
+                                          .targetProgress(fundraisingViewModels
+                                              .fundraiserTarget),
                                       fundraisingTarget:
                                           widget.fundraisingTarget ?? 0,
                                       totalDonated:
-                                          donationViewModels.totalDonated)
+                                          donationViewModels.totalDonated,
+                                      realTargetProgress: donationViewModels
+                                          .showRealTargetProgress as double,
+                                    )
                                   : BuildGaugeIndicator(
                                       fundraisingTarget: fundraisingViewModels
                                               .fundraiserTarget ??
                                           0,
                                       totalDonated:
                                           donationViewModels.totalDonated,
-                                      targetProgress:
-                                          donationViewModels.targetProgress),
+                                      targetProgress: donationViewModels
+                                          .targetProgress(fundraisingViewModels
+                                              .fundraiserTarget),
+                                      realTargetProgress: donationViewModels
+                                          .showRealTargetProgress as double,
+                                    ),
+
                               fundraisingViewModels.getCommunitiesButton(
                                   widget.userID, widget.fundraisingID),
                               // getCommunities(),
@@ -227,12 +239,17 @@ class _DisplayFundraisingChartState extends State<DisplayFundraisingChart> {
                                                   ? getDonorNameWithHide(
                                                       donation.donorName)
                                                   : Flexible(
-                                                    child: Text(donation.donorName,
+                                                      child: Text(
+                                                        donation.donorName,
                                                         style: TextStyle(
                                                             fontSize: 40.sp,
                                                             fontWeight:
-                                                                FontWeight.bold), overflow: TextOverflow.ellipsis,),
-                                                  ),
+                                                                FontWeight
+                                                                    .bold),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
                                               fundraisingViewModels
                                                           .showDonorAmount ==
                                                       YesOrNoDropDownList
@@ -405,7 +422,8 @@ class _DisplayFundraisingChartState extends State<DisplayFundraisingChart> {
     return Flexible(
       child: Text(
         maskOnDonorName.toString(),
-        style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,
+        style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
@@ -439,42 +457,45 @@ class _DisplayFundraisingChartState extends State<DisplayFundraisingChart> {
   Widget getDonorAmountMaskOnAmount(double donationAmount) {
     int numberOfStar;
 
-
     if (donationAmount <= 100) {
-      numberOfStar=1;
-    }  else if(donationAmount > 100 && donationAmount<= 250){
-      numberOfStar=2;
-    }else if(donationAmount > 250 && donationAmount<= 500){
-      numberOfStar=3;
-    }else if(donationAmount > 500 && donationAmount<= 750){
-      numberOfStar=4;
-    }else if(donationAmount > 750 && donationAmount<= 1000){
-      numberOfStar=5;
-    }else if(donationAmount > 1000 && donationAmount<= 1500){
-      numberOfStar=6;
-    }else if(donationAmount > 1500 && donationAmount<= 2500){
-      numberOfStar=7;
-    }else if(donationAmount > 2500 && donationAmount<= 5000){
-      numberOfStar=8;
-    }else if(donationAmount > 5000 && donationAmount<= 7500){
-      numberOfStar=9;
-    }else {
-      numberOfStar=10;
+      numberOfStar = 1;
+    } else if (donationAmount > 100 && donationAmount <= 250) {
+      numberOfStar = 2;
+    } else if (donationAmount > 250 && donationAmount <= 500) {
+      numberOfStar = 3;
+    } else if (donationAmount > 500 && donationAmount <= 750) {
+      numberOfStar = 4;
+    } else if (donationAmount > 750 && donationAmount <= 1000) {
+      numberOfStar = 5;
+    } else if (donationAmount > 1000 && donationAmount <= 1500) {
+      numberOfStar = 6;
+    } else if (donationAmount > 1500 && donationAmount <= 2500) {
+      numberOfStar = 7;
+    } else if (donationAmount > 2500 && donationAmount <= 5000) {
+      numberOfStar = 8;
+    } else if (donationAmount > 5000 && donationAmount <= 7500) {
+      numberOfStar = 9;
+    } else {
+      numberOfStar = 10;
     }
 
-
-    return Wrap(  // Wrap to prevent overflow
+    return Wrap(
+      // Wrap to prevent overflow
       spacing: 4.0,
       runSpacing: 4.0,
       alignment: WrapAlignment.center,
-      children: List.generate(10, (index) => (index+1) <= numberOfStar ? _buildStarIconWithColor() :_buildStarIcon() ),
+      children: List.generate(
+          10,
+          (index) => (index + 1) <= numberOfStar
+              ? _buildStarIconWithColor()
+              : _buildStarIcon()),
     );
   }
 
   Widget _buildStarIcon() {
     return Icon(
       Icons.star,
-       color: Colors.white,
+      color: Colors.white,
       shadows: [Shadow(color: Colors.black, blurRadius: 10.0)],
       size: 35.sp, // Reduce size to avoid overflow
     );
@@ -482,10 +503,10 @@ class _DisplayFundraisingChartState extends State<DisplayFundraisingChart> {
 
   _buildStarIconWithColor() {
     return Icon(
-    Icons.star,
-    color: Colors.yellowAccent,
-    shadows: [Shadow(color: Colors.black, blurRadius: 10.0)],
-    size: 35.sp, // Reduce size to avoid overflow
+      Icons.star,
+      color: Colors.yellowAccent,
+      shadows: [Shadow(color: Colors.black, blurRadius: 10.0)],
+      size: 35.sp, // Reduce size to avoid overflow
     );
   }
 }

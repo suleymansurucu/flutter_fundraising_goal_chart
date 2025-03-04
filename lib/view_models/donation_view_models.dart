@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fundraising_goal_chart/locator.dart';
 import 'package:flutter_fundraising_goal_chart/models/donation_model.dart';
 import 'package:flutter_fundraising_goal_chart/services/donation_service.dart';
+import 'package:flutter_fundraising_goal_chart/view_models/fundraising_view_models.dart';
+import 'package:provider/provider.dart';
 
 class DonationViewModels with ChangeNotifier {
   final DonationService donationService = locator<DonationService>();
@@ -19,6 +21,8 @@ class DonationViewModels with ChangeNotifier {
 
   String? donorNameError;
   String? donorAmountError;
+  double? _showRealTargetProgress = 0.0;
+  double? get showRealTargetProgress => _showRealTargetProgress;
 
   bool validateForm(TextEditingController donorNameController,
       TextEditingController donorAmountController) {
@@ -40,7 +44,7 @@ class DonationViewModels with ChangeNotifier {
     if (donorAmountController.text.trim().isEmpty) {
       donorAmountError = 'Donor Amount is required';
       isValid = false;
-    }  else {
+    } else {
       donorAmountError = null; // Clear error if valid
     }
 
@@ -85,14 +89,17 @@ class DonationViewModels with ChangeNotifier {
     await donationService.addDonation(donationModel);
   }
 
-  double get targetProgress {
+  double targetProgress(fundraisingTarget) {
     double totalDonated = _donations.fold(0, (sum, donation) {
       return sum + donation.donationAmount;
     });
-    double value = (totalDonated / 100000) * 100;
+    double value = (totalDonated / fundraisingTarget) * 100;
+    _showRealTargetProgress = value;
     if (value > 100) {
       value = 100;
     }
+
+    notifyListeners();
     return value;
   }
 
@@ -101,5 +108,9 @@ class DonationViewModels with ChangeNotifier {
       return sum + donation.donationAmount;
     });
     return totalDonated;
+  }
+
+  Future<void> deleteDonation(DonationModel donationModel) async {
+    await donationService.deleteDonation(donationModel);
   }
 }

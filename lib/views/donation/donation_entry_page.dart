@@ -14,6 +14,7 @@ import 'package:flutter_fundraising_goal_chart/view_models/fundraising_view_mode
 import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class DonationEntryPage extends StatefulWidget {
   const DonationEntryPage({super.key});
@@ -55,6 +56,8 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
     list = fundraisingViewModels.list!;
     final userViewModels = Provider.of<UserViewModels>(context, listen: false);
     userID = userViewModels.userModel!.userID;
+    Future.delayed(Duration(milliseconds: 400));
+
   }
 
   String formatCurrency(double value) {
@@ -133,8 +136,10 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
         Provider.of<FundraisingViewModels>(context, listen: false);
     bool validation = donationViewModels.validateForm(
         _donorNameController, _donorNameController);
+    String donationID = Uuid().v4();
     if (validation) {
       DonationModel donationModel = DonationModel(
+          donationID: donationID,
           communityName: fundraisingViewModels.thisFundraising!,
           donationAmount: donationAmount!,
           donorName: _donorNameController.text,
@@ -280,6 +285,12 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
                                   ),
                                 ),
                               ),
+                              list.isNotEmpty
+                                  ? SizedBox()
+                                  : Text(
+                                      'To enter a donation or view the fundraising list, you need to create a fundraising first.',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
                               const SizedBox(height: 20),
                               Align(
                                 child: Text(

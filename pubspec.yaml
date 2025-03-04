@@ -47,6 +47,9 @@ dependencies:
   syncfusion_flutter_charts: ^28.2.6
   gauge_indicator: ^0.4.3
   flutter_screenutil: ^5.9.3
+  excel: ^4.0.6
+  path_provider: ^2.1.5
+  html: ^0.15.0
 
 
 

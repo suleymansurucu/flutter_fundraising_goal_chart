@@ -7,11 +7,13 @@ class BuildPieChart extends StatefulWidget {
   double targetProgress;
   double fundraisingTarget;
   double totalDonated;
+  double realTargetProgress;
 
   BuildPieChart(
       {required this.targetProgress,
       required this.fundraisingTarget,
       required this.totalDonated,
+      required this.realTargetProgress,
       super.key});
 
   @override
@@ -24,13 +26,14 @@ class _BuildPieChartState extends State<BuildPieChart> {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
-
     return Expanded(
       child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
         BuildLinearChart(
-            fundraisingTarget: widget.fundraisingTarget,
-            totalDonated: widget.totalDonated,
-            targetProgress: widget.targetProgress),
+          fundraisingTarget: widget.fundraisingTarget,
+          totalDonated: widget.totalDonated,
+          targetProgress: widget.targetProgress,
+          realTargetProgress: widget.realTargetProgress,
+        ),
         SizedBox(height: screenHeight * 0.06),
         Stack(alignment: Alignment.center, children: [
           PieChart(
@@ -39,7 +42,7 @@ class _BuildPieChartState extends State<BuildPieChart> {
               'Remaining': 100 - widget.targetProgress,
             },
             chartType: ChartType.ring,
-            chartRadius:screenHeight * 0.5,
+            chartRadius: screenHeight * 0.5,
             colorList: [Colors.green, Colors.red],
             //centerText: "${donationViewModels.targetProgress.toStringAsFixed(1)}%",
             ringStrokeWidth: 64,
@@ -60,7 +63,7 @@ class _BuildPieChartState extends State<BuildPieChart> {
           ),
           Positioned(
             child: Text(
-              '${widget.targetProgress.toStringAsFixed(1)}%',
+              '${widget.realTargetProgress.toStringAsFixed(1)}%',
               style: TextStyle(
                   fontSize: screenWidth * 0.06,
                   fontWeight: FontWeight.bold,

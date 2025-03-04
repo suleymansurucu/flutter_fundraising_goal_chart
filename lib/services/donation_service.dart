@@ -13,7 +13,7 @@ class DonationService {
           .collection('fundraiser')
           .doc(donationModel.fundraisingID)
           .collection('donations')
-          .doc()
+          .doc(donationModel.donationID)
           .set(donationModel.toMap());
     } catch (e) {
       debugPrint(e.toString());
@@ -54,6 +54,22 @@ class DonationService {
             debugPrint('Database servis: ${donation.toString()}');
             return donation;
           }).toList());
+    }
+  }
+
+  Future<void> deleteDonation(
+      DonationModel donationModel) async {
+    try {
+      firestore
+          .collection('users')
+          .doc(donationModel.userID)
+          .collection('fundraiser')
+          .doc(donationModel.fundraisingID)
+          .collection('donations')
+          .doc(donationModel.donationID)
+          .delete();
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 }

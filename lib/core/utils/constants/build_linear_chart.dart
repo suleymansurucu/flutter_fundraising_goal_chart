@@ -8,11 +8,13 @@ class BuildLinearChart extends StatefulWidget {
   double targetProgress;
   double fundraisingTarget;
   double totalDonated;
+  double realTargetProgress;
 
   BuildLinearChart(
       {required this.fundraisingTarget,
       required this.totalDonated,
       required this.targetProgress,
+      required this.realTargetProgress,
       super.key});
 
   @override
@@ -77,12 +79,13 @@ class _BuildLinearChartState extends State<BuildLinearChart> {
                 backgroundColor: Colors.grey.withOpacity(0.4),
                 borderRadius: BorderRadius.circular(180.w),
                 color: Colors.green,
-                minHeight: 40.w,
+                minHeight: 60.w,
                 value: widget.targetProgress / 100,
+
               ),
               Text(
-                '${(widget.targetProgress).toInt()}%',
-                style: TextStyle(fontSize: 40.sp, fontWeight: FontWeight.bold),
+                '${widget.realTargetProgress.toStringAsFixed(1)}%',
+                style: TextStyle(fontSize: 40.sp, fontWeight: FontWeight.bold, color: Colors.white, shadows: [Shadow(color: Colors.black, blurRadius: 10)]),
               ),
             ],
           ),

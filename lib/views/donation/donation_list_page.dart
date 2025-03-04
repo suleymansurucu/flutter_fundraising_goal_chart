@@ -1,3 +1,17 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:excel/excel.dart' as exc;
+import 'package:flutter/foundation.dart';
+import 'package:html/dom.dart';
+import 'package:html/dom_parsing.dart';
+import 'package:html/html_escape.dart';
+import 'package:html/parser.dart' as html;
+
+
+
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_draw_menu.dart';
@@ -12,6 +26,7 @@ import 'package:flutter_fundraising_goal_chart/view_models/fundraising_view_mode
 import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class DonationListPage extends StatefulWidget {
@@ -102,15 +117,15 @@ class _DonationListPageState extends State<DonationListPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          'Select a Fundraising Event:',
+                          'Select a Fundraising Event',
                           style: TextStyle(
                             color: Constants.textColor,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w500,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 2),
                         Divider(),
                         const SizedBox(height: 5),
                         Row(
@@ -125,17 +140,17 @@ class _DonationListPageState extends State<DonationListPage> {
                                       color: Constants.primary, width: 1.5),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButton<String>(
                                     dropdownColor: Constants.background,
                                     value:
-                                    fundraisingViewModels.thisFundraising,
+                                        fundraisingViewModels.thisFundraising,
                                     onChanged: (String? newValue) {
                                       if (newValue != null) {
-                                        fundraisingViewModels.onFundraising(newValue);
-                                        debugPrint('Selected Community: ${fundraisingViewModels.thisFundraising}');
+                                        fundraisingViewModels
+                                            .onFundraising(newValue);
 
                                         // _onFundraising(newValue);
                                       }
@@ -160,7 +175,6 @@ class _DonationListPageState extends State<DonationListPage> {
                                 textColor: Colors.white),
                           ],
                         ),
-
                       ],
                     ),
                   );
@@ -169,82 +183,156 @@ class _DonationListPageState extends State<DonationListPage> {
             ),
             Padding(
               padding: const EdgeInsets.all(32.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    padding:
-                        EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    decoration: BoxDecoration(
+              child: SizedBox(
+                width: 600,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      decoration: BoxDecoration(
                         color: Constants.primary,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Text(
-                      '-- Last Donors --',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Consumer2<DonationViewModels, FundraisingViewModels>(
-                      builder: (context, donationViewModels,
-                          fundraisingViewModels, widget) {
-                    var donations = donationViewModels.donations;
-                    if (donationViewModels.donations.isEmpty || donations == null) {
-                      return Center(child: Text("No donations yet."));
-                    }
-                    return SizedBox(
-                      height: 400,
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        padding: EdgeInsets.all(8),
-                        itemCount: donations.length,
-                        itemBuilder: (context, index) {
-                          final DonationModel donation = donations[index];
-                          return Card(
-                            color: Colors.white,
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: Constants.primary,
-                                child: Text(
-                                  '${donations.length - index}',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              title: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      donation.donorName,
-                                      style: TextStyle(
-                                          fontSize: 40.sp,
-                                          fontWeight: FontWeight.bold),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  BuildElevatedButton(onPressed: (){}, buttonText: 'Delete', buttonColor: Colors.redAccent, textColor: Colors.white)
-                                ],
-                              ),
-                              subtitle: getDonorAmountWithDollars(
-                                  donation.donationAmount)
-                            ),
-                          );
-                        },
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                    );
-                  }),
-                ],
+                      child: Row(
+                        //mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Donor List',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center, // Ortada hizalama
+                            ),
+                          ),
+
+                          ElevatedButton(
+                            onPressed: () {
+                              exportExcel();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              alignment: Alignment.centerRight,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.download,
+                                  color: Constants.primary,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Export Text',
+                                  style: TextStyle(color: Constants.primary),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
+            Consumer2<DonationViewModels, FundraisingViewModels>(builder:
+                (context, donationViewModels, fundraisingViewModels, widget) {
+              var donations = donationViewModels.donations;
+              if (donationViewModels.donations.isEmpty || donations == null) {
+                return Center(child: Text("No donations yet."));
+              }
+
+              return SizedBox(
+                height: 800.h,
+                width: 600.h,
+                child: ListView.builder(
+                  controller: _scrollController,
+                  padding: EdgeInsets.all(8),
+                  itemCount: donations.length,
+                  itemBuilder: (context, index) {
+                    final DonationModel donation = donations[index];
+                    return Card(
+                      color: Colors.white,
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Constants.primary,
+                          child: Text(
+                            '${donations.length - index}',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          donation.donorName,
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle:
+                            getDonorAmountWithDollars(donation.donationAmount),
+                        trailing: BuildElevatedButton(
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext buildcontext) =>
+                                      AlertDialog(
+                                        title: const Text(
+                                            'Are You Sure For Delete Donation'),
+                                        content: Text(
+                                            'You are deleting donor is ${donation.donorName}, amount is \$ ${donation.donationAmount}'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text(
+                                              'Cancel',
+                                              style:
+                                                  TextStyle(color: Colors.grey),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              _deleteDonation(donation);
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text(
+                                              'Delete',
+                                              style:
+                                                  TextStyle(color: Colors.red),
+                                            ),
+                                          ),
+                                        ],
+                                        // icon: Icon(Icons.delete, color: Constants.highlight,),
+                                        backgroundColor: Constants.background,
+                                        elevation: 10,
+                                        // titleTextStyle: TextStyle(color: Constants.primary),
+                                      ));
+                            },
+                            buttonText: 'Delete',
+                            buttonColor: Colors.redAccent,
+                            textColor: Colors.white),
+                      ),
+                    );
+                  },
+                ),
+              );
+            }),
           ],
         ),
       ),
@@ -263,7 +351,6 @@ class _DonationListPageState extends State<DonationListPage> {
     final userViewModels = Provider.of<UserViewModels>(context, listen: false);
     userID = userViewModels.userModel!.userID;
 
-
     /*final donationViewModel =
     Provider.of<DonationViewModels>(context, listen: false);
     donationViewModel.listenToDonations(
@@ -272,7 +359,8 @@ class _DonationListPageState extends State<DonationListPage> {
         thisFundraising!,
         fundraisingViewModels.communityCount?.toInt() ?? 1);*/
 
-     fundraisingModel=await fundraisingViewModels.getFundraiser(userID, fundraisingViewModels.fundraisingID!);
+    fundraisingModel = await fundraisingViewModels.getFundraiser(
+        userID, fundraisingViewModels.fundraisingID!);
   }
 
   void _scrollToTop() {
@@ -292,45 +380,120 @@ class _DonationListPageState extends State<DonationListPage> {
     }
     var oCcy = NumberFormat("#,##0.00", "en_US");
 
-
-
-    var currency=fundraisingModel!.currency;
+    var currency = fundraisingModel!.currency;
     debugPrint('currency : ${currency}');
 
     if (currency == CurrencyDropDownList.dollar.label) {
       return Text(
         '\$ ${oCcy.format(donationAmount)}',
-        style: TextStyle(fontSize: 50.sp),
+        style: TextStyle(fontSize: 20),
       );
     } else if (currency == CurrencyDropDownList.euro.label) {
       return Text(
         '\€ ${oCcy.format(donationAmount)}',
-        style: TextStyle(fontSize: 50.sp),
+        style: TextStyle(fontSize: 20),
       );
     } else if (currency == CurrencyDropDownList.turkishLira.label) {
       return Text(
         '\₺ ${oCcy.format(donationAmount)}',
-        style: TextStyle(fontSize: 50.sp),
+        style: TextStyle(fontSize: 20),
       );
     }
-
-
   }
 
-  void _getDonations() {
+  void _getDonations() async {
     final donationViewModel =
         Provider.of<DonationViewModels>(context, listen: false);
     final FundraisingViewModels fundraisingViewModels =
-    Provider.of<FundraisingViewModels>(context, listen: false);
+        Provider.of<FundraisingViewModels>(context, listen: false);
     try {
-      donationViewModel.listenToDonations(
-          userID, fundraisingViewModels.fundraisingID!, fundraisingViewModels.thisFundraising!, 1);
+      fundraisingModel = await fundraisingViewModels.getFundraiser(
+          userID, fundraisingViewModels.fundraisingID!);
 
-      debugPrint('community name mi ne acaba ? $thisFundraising');
+      donationViewModel.listenToDonations(
+          userID,
+          fundraisingViewModels.fundraisingID!,
+          fundraisingViewModels.thisFundraising!,
+          1);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error loading donations: $e')),
       );
     }
+  }
+
+  void _deleteDonation(DonationModel donationModel) {
+    DonationViewModels donationViewModels =
+        Provider.of<DonationViewModels>(context, listen: false);
+
+    var deletedDonationModel = donationModel;
+    donationViewModels.deleteDonation(deletedDonationModel);
+  }
+
+  Future<void> exportExcel() async {
+    DonationViewModels donationViewModels =
+    Provider.of<DonationViewModels>(context, listen: false);
+    var donationList = donationViewModels.donations;
+
+    if (donationList.isEmpty || donationList == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("No donations available to export.")),
+      );
+      return;
+    }
+
+    var excel = exc.Excel.createExcel();
+    exc.Sheet sheet = excel[donationList[0].communityName];
+
+    // Ensure correct type usage by wrapping each string in TextCellValue
+    sheet.appendRow([
+      exc.TextCellValue('index'),
+      exc.TextCellValue('Donor Name'),
+      exc.TextCellValue('Donor Amount')
+    ]);
+
+    int index = 1; // Initialize index before loop
+    for (var donations in donationList) {
+      // Ensure the values being added to the row are of type TextCellValue
+      var row = [
+        exc.TextCellValue(index.toString()), // Ensure 'index' is wrapped in TextCellValue
+        exc.TextCellValue(donations.donorName), // Ensure donorName is wrapped in TextCellValue
+        exc.TextCellValue(donations.donationAmount.toString()) // Ensure donationAmount is wrapped in TextCellValue
+      ];
+      sheet.appendRow(row); // Add the row to the sheet
+      index++; // Increment the index after adding the row
+    }
+
+    // Save the file to device storage
+    // Encode the excel file
+    // Check if running on the web and handle accordingly
+    if (kIsWeb) {
+      var bytes = await excel.encode()!;
+      final blob = html.Blob([Uint8List.fromList(bytes)]);
+      final url = html.Url.createObjectUrlFromBlob(blob);
+
+      // Create an anchor element for downloading
+      final anchor = html.AnchorElement(href: url)
+        ..target = 'blank'
+        ..download = 'donations.xlsx'
+        ..click();
+
+      // Clean up the URL object after download
+      html.Url.revokeObjectUrl(url);
+
+      // Show confirmation message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Donations exported to Excel.")),
+      );
+    } else {
+      // Handle export for non-web environments (e.g., mobile)
+      final directory = await getApplicationDocumentsDirectory();
+      final file = File('${directory.path}/donations.xlsx');
+      await file.writeAsBytes(await excel.encode()!);
+
+      // Show confirmation message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Donations exported to Excel.")),
+      );
   }
 }
