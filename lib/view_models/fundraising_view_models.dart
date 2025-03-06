@@ -5,9 +5,7 @@ import 'package:flutter_fundraising_goal_chart/locator.dart';
 import 'package:flutter_fundraising_goal_chart/models/fundraising_model.dart';
 import 'package:flutter_fundraising_goal_chart/services/user_repository.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/donation_view_models.dart';
-import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 enum ViewState { Busy, Idle }
 
@@ -299,4 +297,7 @@ class FundraisingViewModels with ChangeNotifier {
     _fundraisingID = result;
     notifyListeners();
   }
+  
+
+
 }

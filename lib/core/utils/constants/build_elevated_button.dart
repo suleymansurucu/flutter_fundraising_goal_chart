@@ -11,12 +11,14 @@ class BuildElevatedButton extends StatelessWidget {
   final IconData? icon;
   final Color? iconColor;
   final bool hasShadow;
+  final double? buttonFontSize;
 
   const BuildElevatedButton({
     required this.onPressed,
     required this.buttonText,
     required this.buttonColor,
     required this.textColor,
+    this.buttonFontSize = 16,
     this.borderRadius = 12.0,
     this.paddingVertical = 18.0,
     this.paddingHorizontal = 40.0,
@@ -51,7 +53,7 @@ class BuildElevatedButton extends StatelessWidget {
           Text(
             buttonText,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: buttonFontSize,
               fontWeight: FontWeight.bold,
               color: textColor,
             ),

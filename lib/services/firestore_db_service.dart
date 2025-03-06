@@ -244,11 +244,20 @@ class FirestoreDbService implements FirestoreDbBase {
     Map<String, dynamic> mapFundraiser =
         documentFundraiser.data() as Map<String, dynamic>;
 
-    FundraisingModel fundraisingModel=FundraisingModel.fromMap(mapFundraiser);
+    FundraisingModel fundraisingModel = FundraisingModel.fromMap(mapFundraiser);
+  }
 
-
-
-
-
+  @override
+  Future<void> deleteFundraising(String userID, String fundraisingID) async {
+    try {
+      _firebaseFirestore
+          .collection('users')
+          .doc(userID)
+          .collection('fundraiser')
+          .doc(fundraisingID)
+          .delete();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 }

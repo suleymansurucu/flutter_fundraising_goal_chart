@@ -212,10 +212,9 @@ class UserViewModels with ChangeNotifier implements AuthBase, FirestoreDbBase {
     }
   }
 
-
-
   @override
-  Future<bool?> createFundraising(Map<String, dynamic> fundraisingModel,String fundraisingID, String userID) async {
+  Future<bool?> createFundraising(Map<String, dynamic> fundraisingModel,
+      String fundraisingID, String userID) async {
     // TODO: implement createFundraising
     throw UnimplementedError();
   }
@@ -227,7 +226,8 @@ class UserViewModels with ChangeNotifier implements AuthBase, FirestoreDbBase {
   }
 
   @override
-  Future<bool?> saveDonation(String userID, String fundraisingID, String communityName, String donorName, double donationAmount) {
+  Future<bool?> saveDonation(String userID, String fundraisingID,
+      String communityName, String donorName, double donationAmount) {
     // TODO: implement saveDonation
     throw UnimplementedError();
   }
@@ -239,14 +239,27 @@ class UserViewModels with ChangeNotifier implements AuthBase, FirestoreDbBase {
   }
 
   @override
-  Future<String?> getFundraisingIDByCommunityName(String userID, String communityName) {
+  Future<String?> getFundraisingIDByCommunityName(
+      String userID, String communityName) {
     // TODO: implement getFundraisingIDByCommunityName
     throw UnimplementedError();
   }
 
   @override
-  Future<FundraisingModel> getFundraiser(String userID,String fundraisingID) {
+  Future<FundraisingModel> getFundraiser(String userID, String fundraisingID) {
     // TODO: implement getFundraiser
     throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteFundraising(String userID, String fundraisingID) async {
+    try {
+      _setState(ViewState.Busy);
+      userRepository.deleteFundraising(userID, fundraisingID);
+
+      _setState(ViewState.Idle);
+    } catch (e) {
+      _setState(ViewState.Idle);
+    }
   }
 }

@@ -224,4 +224,28 @@ class UserRepository with ChangeNotifier implements AuthBase, FirestoreDbBase {
     }
     return null;
   }
+
+  @override
+  Future<void> deleteFundraising(String userID, String fundraisingID) async {
+    if (appMode == AppMode.DEBUG) {
+      //TODO: I will create test data with connection
+    } else {
+      try {
+        final user = firebaseAuthService.currentUser;
+        if (user != null) {
+          return await firestoreDbService.deleteFundraising(userID,fundraisingID);
+        }
+      } catch (e) {
+        debugPrint(e.toString());
+        return null;
+      }
+    }
+    return null;
+  }
+
+  @override
+  Future<void> deleteDonation(String userID, String fundraisingID) {
+    // TODO: implement deleteDonation
+    throw UnimplementedError();
+  }
 }

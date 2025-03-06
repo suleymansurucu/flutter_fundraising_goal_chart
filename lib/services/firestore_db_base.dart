@@ -13,6 +13,7 @@ abstract class FirestoreDbBase {
   Future<String?> getFundraisingIDByCommunityName(String userID, String communityName);
 
   Future<FundraisingModel?> getFundraiser(String userID,String fundraisingID);
+  Future<void> deleteFundraising(String userID, String fundraisingID);
 
 
 }

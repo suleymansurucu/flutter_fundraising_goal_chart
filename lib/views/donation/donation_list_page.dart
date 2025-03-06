@@ -1,17 +1,4 @@
 import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:excel/excel.dart' as exc;
-import 'package:flutter/foundation.dart';
-import 'package:html/dom.dart';
-import 'package:html/dom_parsing.dart';
-import 'package:html/html_escape.dart';
-import 'package:html/parser.dart' as html;
-
-
-
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_draw_menu.dart';
@@ -182,7 +169,7 @@ class _DonationListPageState extends State<DonationListPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(32.0),
+              padding: const EdgeInsets.all(8.0),
               child: SizedBox(
                 width: 600,
                 child: Column(
@@ -210,10 +197,9 @@ class _DonationListPageState extends State<DonationListPage> {
                               textAlign: TextAlign.center, // Ortada hizalama
                             ),
                           ),
-
                           ElevatedButton(
                             onPressed: () {
-                              exportExcel();
+                              //   exportExcel();
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
@@ -252,10 +238,9 @@ class _DonationListPageState extends State<DonationListPage> {
               if (donationViewModels.donations.isEmpty || donations == null) {
                 return Center(child: Text("No donations yet."));
               }
-
               return SizedBox(
                 height: 800.h,
-                width: 600.h,
+                width: 600,
                 child: ListView.builder(
                   controller: _scrollController,
                   padding: EdgeInsets.all(8),
@@ -429,8 +414,9 @@ class _DonationListPageState extends State<DonationListPage> {
     var deletedDonationModel = donationModel;
     donationViewModels.deleteDonation(deletedDonationModel);
   }
-
-  Future<void> exportExcel() async {
+}
+/*
+    Future<void> exportExcel() async {
     DonationViewModels donationViewModels =
     Provider.of<DonationViewModels>(context, listen: false);
     var donationList = donationViewModels.donations;
@@ -497,3 +483,6 @@ class _DonationListPageState extends State<DonationListPage> {
       );
   }
 }
+
+
+   */
