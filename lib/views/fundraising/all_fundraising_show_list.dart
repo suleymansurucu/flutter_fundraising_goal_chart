@@ -140,7 +140,7 @@ class _AllFundraisingShowListState extends State<AllFundraisingShowList> {
                                         final fundraisingID =
                                             fundraiser.fundraisingID;
                                         context.go(
-                                            '/display-chart/$fundraisingID/$userID');
+                                            '/update-display-chart/$fundraisingID');
                                       },
                                       buttonText: 'Update',
                                       buttonColor: Colors.greenAccent,

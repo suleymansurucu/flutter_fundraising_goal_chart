@@ -5,9 +5,9 @@ enum CurrencyDropDownList {
   euro('Euro', Icons.euro),
   turkishLira('Turkish Lira', Icons.money_off);
 
-  const CurrencyDropDownList(this.label, this.icon);
+   const CurrencyDropDownList(this.label, this.icon);
 
-  final String label;
+     final String label;
   final IconData icon;
 }
 
@@ -18,7 +18,7 @@ enum GraphicTypeDropDownList {
 
   const GraphicTypeDropDownList(this.label, this.icon);
 
-  final String label;
+   final String label;
   final IconData icon;
 }
 
@@ -28,7 +28,7 @@ enum YesOrNoDropDownList {
 
   const YesOrNoDropDownList(this.label, this.icon);
 
-  final String label;
+   final String label;
   final IconData icon;
 }
 

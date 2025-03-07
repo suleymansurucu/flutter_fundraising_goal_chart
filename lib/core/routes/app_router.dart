@@ -9,6 +9,7 @@ import 'package:flutter_fundraising_goal_chart/views/donation/donation_list_page
 import 'package:flutter_fundraising_goal_chart/views/fundraising/all_fundraising_show_list.dart';
 import 'package:flutter_fundraising_goal_chart/views/fundraising/display_fundraising_chart.dart';
 import 'package:flutter_fundraising_goal_chart/views/fundraising/fundraising_setup_page.dart';
+import 'package:flutter_fundraising_goal_chart/views/fundraising/update_fundraising_page.dart';
 import 'package:flutter_fundraising_goal_chart/views/home/home_page.dart';
 import 'package:flutter_fundraising_goal_chart/views/landing_page.dart';
 import 'package:go_router/go_router.dart';
@@ -93,6 +94,15 @@ final GoRouter appRouter = GoRouter(
       path: RouteNames.donationList,
       name: RouteNames.donationList,
       builder: (context, state) => const DonationListPage(),
+    ),
+    GoRoute(
+      path: '/update-display-chart/:fundraisingID',
+      builder: (context, state) {
+        final String fundraisingID = state.pathParameters['fundraisingID']!;
+        return UpdateFundraisingPage(
+          fundraisingID: fundraisingID,
+        );
+      },
     ),
   ],
 );
