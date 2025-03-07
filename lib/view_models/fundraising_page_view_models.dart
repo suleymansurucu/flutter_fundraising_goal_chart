@@ -1,8 +1,12 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_fundraising_goal_chart/core/routes/route_names.dart';
+import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_drop_down_menu.dart';
 import 'package:flutter_fundraising_goal_chart/locator.dart';
 import 'package:flutter_fundraising_goal_chart/models/fundraising_model.dart';
 import 'package:flutter_fundraising_goal_chart/services/user_repository.dart';
+import 'package:go_router/go_router.dart';
 
 class FundraisingPageViewModels with ChangeNotifier {
   final UserRepository userRepository = locator<UserRepository>();
@@ -28,18 +32,16 @@ class FundraisingPageViewModels with ChangeNotifier {
   TextEditingController get fundraisingUniqueNameText => _fundraisingUniqueName;
 
 // Fundraising Slogan Getter
-  TextEditingController get fundraisingSloganText => _fundraisingSloganController;
+  TextEditingController get fundraisingSloganText =>
+      _fundraisingSloganController;
 
 // Fundraising Goal Getter
   TextEditingController get fundraisingGoalText => _fundraisingGoalController;
 
 // Community Getter (Tüm topluluk adlarını ve hedeflerini liste olarak döndürmek için)
-  List<String> get communityNames =>
-      _communityNameControllers.map((controller) => controller.text).toList();
+  List<TextEditingController> get communityNames => _communityNameControllers;
 
-  List<double> get communityGoals => _communityGoalControllers
-      .map((controller) => double.tryParse(controller.text) ?? 0.0)
-      .toList();
+  List<TextEditingController> get communityGoals => _communityGoalControllers;
 
   CurrencyDropDownList get selectedCurrency => _selectedCurrency;
 
@@ -53,9 +55,15 @@ class FundraisingPageViewModels with ChangeNotifier {
 
   int get communityCount => _communityCount;
 
+  int _activeStep = 0; // Using variable for easyStepper next or back
+
+  int get activeStep => _activeStep;
+  late FundraisingModel _firstFundraising;
+
   void initializeFundraising(String userID, String fundraisingID) async {
     var fetchedFundraising =
         await userRepository.getFundraiser(userID, fundraisingID);
+    _firstFundraising = fetchedFundraising!;
 
     if (fetchedFundraising != null) {
       _fundraisingUniqueName.text = fetchedFundraising.uniqueName.isNotEmpty
@@ -99,6 +107,7 @@ class FundraisingPageViewModels with ChangeNotifier {
     }
     notifyListeners();
   }
+
   void _addCommunityFields() {
     _communityNameControllers.clear();
     _communityGoalControllers.clear();
@@ -125,19 +134,129 @@ class FundraisingPageViewModels with ChangeNotifier {
 
     super.dispose();
   }
+
   void setDropdownValue<T>(T newValue) {
     if (newValue is CurrencyDropDownList) {
       _selectedCurrency = newValue;
-    } else if (newValue is YesOrNoDropDownList) {
-      if (_selectedYesOrNoForDonorNames.values.contains(newValue)) {
-        _selectedYesOrNoForDonorNames = newValue;
-      } else {
-        _selectedYesOrNoForDonorAmount = newValue;
-      }
     } else if (newValue is GraphicTypeDropDownList) {
       _selectedgraphicType = newValue;
     }
+    notifyListeners();
+  }
 
-    notifyListeners(); // UI'yi güncelle
+  void setDropDownValueDonorNames<T>(T newValue) {
+    _selectedYesOrNoForDonorNames = newValue as YesOrNoDropDownList;
+    notifyListeners();
+  }
+
+  void setDropDownValueDonorAmounts(YesOrNoDropDownList newValue) {
+    _selectedYesOrNoForDonorAmount = newValue;
+    notifyListeners();
+  }
+
+  void setDropDownCommunityCounts(int? newValue) {
+    _communityCount = newValue ?? 1;
+    _addCommunityFields();
+    notifyListeners();
+  }
+
+  void updateSubmitStep(
+      String userID, String fundraisingID, BuildContext context) async {
+    Map<String, dynamic> updatedFields = {};
+
+    // Check changed fields of user profile
+    void addIfChanged(String key, String newValue, String? oldValue) {
+      if (newValue.isNotEmpty && newValue != oldValue) {
+        updatedFields[key] = newValue;
+      }
+    }
+
+    // Check textEditting Controller
+    addIfChanged("uniqueName", _fundraisingUniqueName.text,
+        _firstFundraising.uniqueName);
+    addIfChanged("showDonorNames", _selectedYesOrNoForDonorNames.label,
+        _firstFundraising.showDonorNames);
+    addIfChanged("showDonorAmount", _selectedYesOrNoForDonorAmount.label,
+        _firstFundraising.showDonorAmount);
+    addIfChanged("goalChartType", _selectedgraphicType.label,
+        _firstFundraising.graphicType);
+    addIfChanged("fundraisingSlogan", _fundraisingSloganController.text,
+        _firstFundraising.slogan);
+    addIfChanged(
+        "currency", _selectedCurrency.label, _firstFundraising.currency);
+
+    // `communities` için güncellenmiş alanları saklamak için bir liste oluştur
+    List<Map<String, dynamic>> updatedCommunities = [];
+
+// `communities` için değişiklikleri kontrol et
+    for (int i = 0; i < communityCount; i++) {
+      updatedCommunities.add({
+        'communityName': _communityNameControllers[i].text,
+        'communityGoal': double.tryParse(_communityGoalControllers[i].text)
+      });
+    }
+
+// Eğer topluluklar değiştiyse `updatedFields` içine ekle
+    if (updatedCommunities.isNotEmpty) {
+      updatedFields['communities'] = updatedCommunities;
+    }
+    try {
+      var result = await userRepository.updateFundraising(
+          userID, fundraisingID, updatedFields);
+
+      result == true
+          ? await Flushbar(
+              title: 'You have updated fundraising display page',
+              message:
+                  'You are forwarding a list of your fundraising. You can find this page on your display page.',
+              duration: Duration(seconds: 3),
+              titleColor: Constants.background,
+              messageColor: Constants.background,
+              backgroundColor: Constants.primary,
+              maxWidth: 600,
+              titleSize: 32,
+              messageSize: 22,
+              showProgressIndicator: true,
+              flushbarPosition: FlushbarPosition.TOP,
+              margin: EdgeInsets.all(20),
+            ).show(context)
+          : await Flushbar(
+              title: 'You do not have updated fundraising display page',
+              message: 'Please enter your information.',
+              duration: Duration(seconds: 3),
+              titleColor: Constants.background,
+              messageColor: Constants.background,
+              backgroundColor: Constants.primary,
+              maxWidth: 600,
+              titleSize: 32,
+              messageSize: 22,
+              showProgressIndicator: true,
+              flushbarPosition: FlushbarPosition.TOP,
+              margin: EdgeInsets.all(20),
+            ).show(context);
+
+      result == true ? context.go(RouteNames.allFundraisingShowList) : SizedBox();
+
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    _activeStep=0;
+    notifyListeners();
+  }
+
+  void nextStep() {
+    if (_activeStep < 2) {
+      _activeStep++;
+    } else {
+      // _submitForm();
+    }
+    notifyListeners();
+  }
+
+  void previousStep() {
+    if (_activeStep > 0) {
+      _activeStep--;
+    }
+    notifyListeners();
   }
 }

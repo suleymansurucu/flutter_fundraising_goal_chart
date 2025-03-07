@@ -4,9 +4,9 @@ import 'package:flutter_fundraising_goal_chart/core/routes/app_router.dart';
 import 'package:flutter_fundraising_goal_chart/firebase_options.dart';
 import 'package:flutter_fundraising_goal_chart/locator.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/donation_view_models.dart';
+import 'package:flutter_fundraising_goal_chart/view_models/fundraising_page_view_models.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/fundraising_view_models.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
-import 'package:flutter_fundraising_goal_chart/views/landing_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +22,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => UserViewModels()),
         ChangeNotifierProvider(create: (_) => FundraisingViewModels()),
         ChangeNotifierProvider(create: (_) => DonationViewModels()),
+        ChangeNotifierProvider(create: (_)=>FundraisingPageViewModels()),
       ],
       child: const MyApp(),
     ),

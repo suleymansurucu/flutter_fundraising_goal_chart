@@ -260,4 +260,20 @@ class FirestoreDbService implements FirestoreDbBase {
       debugPrint(e.toString());
     }
   }
+
+  Future<bool?> updateFundraising(String userID, String fundraisingID,
+      Map<String, dynamic> updatedFields) async {
+    try {
+      await _firebaseFirestore
+          .collection('users')
+          .doc(userID)
+          .collection('fundraiser')
+          .doc(fundraisingID)
+          .update(updatedFields);
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
 }

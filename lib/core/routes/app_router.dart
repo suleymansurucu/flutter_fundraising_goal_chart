@@ -96,11 +96,12 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const DonationListPage(),
     ),
     GoRoute(
-      path: '/update-display-chart/:fundraisingID',
+      path: '/update-display-chart/:fundraisingID/:userID',
       builder: (context, state) {
         final String fundraisingID = state.pathParameters['fundraisingID']!;
+        final String userID = state.pathParameters['userID']!;
         return UpdateFundraisingPage(
-          fundraisingID: fundraisingID,
+          fundraisingID: fundraisingID, userID: userID,
         );
       },
     ),

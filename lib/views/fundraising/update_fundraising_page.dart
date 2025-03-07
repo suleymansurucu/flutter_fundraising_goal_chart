@@ -1,8 +1,6 @@
-import 'package:another_flushbar/flushbar.dart';
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_fundraising_goal_chart/core/routes/route_names.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_Text_Form_Field.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_draw_menu.dart';
@@ -10,14 +8,9 @@ import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_drop_d
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_elevated_button.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_text_for_form.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/custom_app_bar.dart';
-import 'package:flutter_fundraising_goal_chart/models/fundraising_model.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/fundraising_page_view_models.dart';
-import 'package:flutter_fundraising_goal_chart/view_models/fundraising_view_models.dart';
-import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 class UpdateFundraisingPage extends StatefulWidget {
   final String fundraisingID;
@@ -32,12 +25,11 @@ class UpdateFundraisingPage extends StatefulWidget {
 class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
   final _formKeyCommunitySetup = GlobalKey<FormState>();
 
-  final GlobalKey<ScaffoldState> _scafoldFundraisingSetupPage =
+  final GlobalKey<ScaffoldState> _scafoldUpdateFundraisingPage =
       GlobalKey<ScaffoldState>();
 
   String? errorCommunity;
 
-  int activeStep = 0;
 
   String formatCurrency(double value) {
     var oCcy = NumberFormat("#,##0.00", "en_US");
@@ -67,19 +59,7 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
     });
   }
 
-  void _nextStep() {
-    if (activeStep < 2) {
-      setState(() => activeStep++);
-    } else {
-     // _submitForm();
-    }
-  }
 
-  void _previousStep() {
-    if (activeStep > 0) {
-      setState(() => activeStep--);
-    }
-  }
 
   @override
   void initState() {
@@ -92,11 +72,12 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
 
   @override
   Widget build(BuildContext context) {
+    FundraisingPageViewModels fundraisingPageViewModels=Provider.of<FundraisingPageViewModels>(context,listen: false);
     return Scaffold(
-      key: _scafoldFundraisingSetupPage,
+      key: _scafoldUpdateFundraisingPage,
       appBar: CustomAppBar(
-        title: 'Fundraising Setup Page',
-        scaffoldKey: _scafoldFundraisingSetupPage,
+        title: 'Edit Your Page',
+        scaffoldKey: _scafoldUpdateFundraisingPage,
       ),
       drawer: BuildDrawMenu(),
       body: Center(
@@ -120,11 +101,12 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
             child: Column(
               children: [
                 EasyStepper(
-                  activeStep: activeStep,
+                  activeStep: fundraisingPageViewModels.activeStep,
                   lineStyle: LineStyle(
                     lineLength: 60,
                     lineThickness: 4,
                     lineSpace: 5,
+                    lineType: LineType.dashed
                   ),
                   stepShape: StepShape.rRectangle,
                   stepBorderRadius: 15,
@@ -132,17 +114,19 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
                   internalPadding: 10,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-                  stepRadius: 28,
+                  stepRadius: 40,
                   finishedStepBorderColor: Colors.green.shade500,
                   finishedStepBackgroundColor: Colors.green.shade200,
-                  activeStepIconColor: Constants.primary,
+                  activeStepIconColor: Colors.white,
+                  activeStepBorderColor: Constants.primary,
+                  activeStepBackgroundColor: Constants.primary,
                   showLoadingAnimation: false,
                   enableStepTapping: true,
                   steps: [
                     EasyStep(
                       customStep: Icon(Icons.info_outline,
-                          size: 30,
-                          color: activeStep >= 0
+                          size: 35,
+                          color: fundraisingPageViewModels.activeStep >= 0
                               ? Constants.primary
                               : Colors.grey),
                       customTitle: const Text('General Info',
@@ -150,8 +134,8 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
                     ),
                     EasyStep(
                       customStep: Icon(Icons.group,
-                          size: 30,
-                          color: activeStep >= 1
+                          size: 35,
+                          color: fundraisingPageViewModels.activeStep >= 1
                               ? Constants.primary
                               : Colors.grey),
                       customTitle: const Text('Community Setup',
@@ -159,12 +143,13 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
                     ),
                     EasyStep(
                       customStep: Icon(Icons.check_circle,
-                          size: 30,
-                          color: activeStep >= 2
+                          size: 35,
+                          color: fundraisingPageViewModels.activeStep >= 2
                               ? Constants.primary
                               : Colors.grey),
                       customTitle: const Text('Review & Submit',
-                          textAlign: TextAlign.center),
+                          textAlign: TextAlign.center,),
+
                     ),
                   ],
                 ),
@@ -174,15 +159,21 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    if (activeStep > 0)
+                    if (fundraisingPageViewModels.activeStep > 0)
                       BuildElevatedButton(
-                          onPressed: _previousStep,
+                          onPressed: fundraisingPageViewModels.previousStep,
                           buttonText: 'Back',
                           buttonColor: Constants.accent,
                           textColor: Colors.white),
                     BuildElevatedButton(
-                        onPressed: _nextStep,
-                        buttonText: activeStep < 2 ? "Next" : "Submit",
+                        onPressed: () {
+                          if (fundraisingPageViewModels.activeStep < 2) {
+                            fundraisingPageViewModels.nextStep();
+                          } else {
+                            fundraisingPageViewModels.updateSubmitStep(widget.userID, widget.fundraisingID, context);
+                          }
+                        },
+                        buttonText: fundraisingPageViewModels.activeStep < 2 ? "Next" : "Submit",
                         buttonColor: Constants.primary,
                         textColor: Colors.white)
                   ],
@@ -196,7 +187,8 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
   }
 
   Widget _buildStepContent() {
-    switch (activeStep) {
+    FundraisingPageViewModels fundraisingPageViewModels=Provider.of<FundraisingPageViewModels>(context,listen: false);
+    switch (fundraisingPageViewModels.activeStep) {
       case 0:
         return _buildGeneralInfoStep();
       case 1:
@@ -266,7 +258,7 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
           SizedBox(height: 4),
           BuildDropDownMenu(
             initialValue: fundraisingPageViewModels.selectedCurrency,
-            onChanged:  ,
+            onChanged: fundraisingPageViewModels.setDropdownValue,
             dropdownColor: Constants.background,
             borderColor: Constants.accent,
             focusedBorderColor: Constants.primary,
@@ -286,8 +278,8 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
           ),
           SizedBox(height: 4),
           BuildDropDownMenu(
-            initialValue: _selectedYesOrNoForDonorNames,
-            onChanged: _onYesOrNoChangedForNamed,
+            initialValue: fundraisingPageViewModels.selectedYesOrNoForDonorNames,
+            onChanged: fundraisingPageViewModels.setDropDownValueDonorNames,
             dropdownColor: Constants.background,
             borderColor: Constants.accent,
             focusedBorderColor: Constants.primary,
@@ -307,8 +299,8 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
           ),
           SizedBox(height: 4),
           BuildDropDownMenu(
-            initialValue: _selectedYesOrNoForDonorAmount,
-            onChanged: _onYesOrNoChangedForAmount,
+            initialValue: fundraisingPageViewModels.selectedYesOrNoForDonorAmount,
+            onChanged: fundraisingPageViewModels.setDropDownValueDonorAmounts,
             dropdownColor: Constants.background,
             borderColor: Constants.accent,
             focusedBorderColor: Constants.primary,
@@ -328,8 +320,8 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
           ),
           SizedBox(height: 4),
           BuildDropDownMenu(
-            initialValue: _selectedgraphicType,
-            onChanged: _ongraphicTypeDropDown,
+            initialValue: fundraisingPageViewModels.selectedGraphicType,
+            onChanged: fundraisingPageViewModels.setDropdownValue,
             dropdownColor: Constants.background,
             borderColor: Constants.accent,
             focusedBorderColor: Constants.primary,
@@ -344,6 +336,7 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
   }
 
   Widget _buildCommunitySetupStep() {
+    FundraisingPageViewModels fundraisingPageViewModels=Provider.of<FundraisingPageViewModels>(context);
     return Column(
       children: [
         Divider(),
@@ -364,27 +357,22 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<int>(
-              value: _communityCount,
+              value: fundraisingPageViewModels.communityCount,
               dropdownColor: Colors.white,
               items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((int value) {
                 return DropdownMenuItem<int>(
                   value: value,
-                  child: Text("$value Communities"),
+                  child: Text(value==1 ? "$value Community" : "$value Communities"),
                 );
               }).toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  _communityCount = newValue!;
-                  _addCommunityFields();
-                });
-              },
+              onChanged: fundraisingPageViewModels.setDropDownCommunityCounts,
             ),
           ),
         ),
         Form(
           key: _formKeyCommunitySetup,
           child: Column(
-            children: List.generate(_communityCount, (index) {
+            children: List.generate(fundraisingPageViewModels.communityCount, (index) {
               return Column(
                 children: [
                   SizedBox(height: 20),
@@ -399,17 +387,10 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
                     keyBoardType: TextInputType.text,
                     labelText: "Community ${index + 1} Name",
                     textFormFieldIcon: Icons.location_city,
-                    textEditingController: _communityNameControllers[index],
+                    textEditingController: fundraisingPageViewModels.communityNames[index],
                     outLineInputBorderColor: Constants.accent,
                     outLineInputBorderColorOnFocused: Constants.primary,
                     hintText: '',
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a name for Community ${index + 1}'; // Hata mesajı
-                      }
-                      return null; // Geçerli
-                    },
-                    errorText: errorCommunity,
                   ),
                   SizedBox(height: 10),
                   BuildTextFormField(
@@ -417,7 +398,7 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
                         TextInputType.numberWithOptions(decimal: true),
                     labelText: "Community ${index + 1} Goal",
                     textFormFieldIcon: Icons.monetization_on,
-                    textEditingController: _communityGoalControllers[index],
+                    textEditingController: fundraisingPageViewModels.communityGoals[index],
                     outLineInputBorderColor: Constants.accent,
                     outLineInputBorderColorOnFocused: Constants.primary,
                     hintText: '',
@@ -434,36 +415,37 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
   }
 
   Widget _buildReviewStep() {
+    FundraisingPageViewModels fundraisingPageViewModels=Provider.of<FundraisingPageViewModels>(context);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
           BuildTextForForm(
-            text: 'Fundraising Name: ${_fundraisingUniqueName.text}',
+            text: 'Fundraising Name: ${fundraisingPageViewModels.fundraisingUniqueNameText.text}',
             textColor: Constants.textColor,
             fontSize: 16,
             fontWeight: FontWeight.w200,
           ),
           BuildTextForForm(
-            text: 'Fundraising Slogan: ${_fundraisingSloganController.text}',
+            text: 'Fundraising Slogan: ${fundraisingPageViewModels.fundraisingSloganText.text}',
             textColor: Constants.textColor,
             fontSize: 16,
             fontWeight: FontWeight.w200,
           ),
           BuildTextForForm(
-            text: 'Selected Currency: ${_selectedCurrency.label}',
+            text: 'Selected Currency: ${fundraisingPageViewModels.selectedCurrency.label}',
             textColor: Constants.textColor,
             fontSize: 16,
             fontWeight: FontWeight.w200,
           ),
           BuildTextForForm(
-            text: 'Show Donor Names: ${_selectedYesOrNoForDonorNames.label}',
+            text: 'Show Donor Names: ${fundraisingPageViewModels.selectedYesOrNoForDonorNames.label}',
             textColor: Constants.textColor,
             fontSize: 16,
             fontWeight: FontWeight.w200,
           ),
           BuildTextForForm(
-            text: 'Fundraising Goal Chart: ${_selectedgraphicType.label}',
+            text: 'Fundraising Goal Chart: ${fundraisingPageViewModels.selectedYesOrNoForDonorAmount.label}',
             textColor: Constants.textColor,
             fontSize: 16,
             fontWeight: FontWeight.w200,
