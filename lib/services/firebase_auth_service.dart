@@ -5,10 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseAuthService implements AuthBase {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
   User? get currentUser => firebaseAuth.currentUser;
 
   Stream<User?> get authStateChanges => firebaseAuth.authStateChanges();
-
 
   UserModel? userModelFromFirebase(User user) {
     return UserModel(userID: user.uid, email: user.email.toString());
@@ -38,13 +38,28 @@ class FirebaseAuthService implements AuthBase {
         debugPrint('firebase auth service ${userModel.fullName}');
       }
       return userModel;
+    } on FirebaseAuthException catch (e) {
+      throw _handleFirebaseError(e);
     } catch (e) {
-      debugPrint(e.toString());
-      return null;
+      throw "An unexpected error occurred. Please try again.";
     }
   }
-
-  @override
+  String _handleFirebaseError(FirebaseAuthException e) {
+    switch (e.code) {
+      case "invalid-email":
+        return "The email address is not valid.";
+      case "user-not-found":
+        return "No user found with this email.";
+      case "wrong-password":
+        return "Incorrect password. Please try again.";
+      case "user-disabled":
+        return "This account has been disabled.";
+      case "too-many-requests":
+        return "Too many login attempts. Please try again later.";
+      default:
+        return "Authentication failed. Please check your credentials.";
+    }
+  }
 
   @override
   Future<bool?> signOutWithEmailAndPassword(String userID) async {
@@ -53,6 +68,38 @@ class FirebaseAuthService implements AuthBase {
       return true;
     } catch (e) {
       debugPrint("Sign out error: ${e.toString()}");
+      return false;
+    }
+  }
+
+  @override
+  Future<bool?> sendPasswordResetEmail(String email) async {
+    try {
+      await firebaseAuth.sendPasswordResetEmail(email: email);
+      return true;
+    } catch (e) {
+      debugPrint("Sign out error: ${e.toString()}");
+      return false;
+    }
+  }
+
+  @override
+  Future<User?> checkCurrentUser() async {
+    try {
+      return firebaseAuth.currentUser;
+    } catch (e) {
+      debugPrint("Current User error: ${e.toString()}");
+      return null;
+    }
+  }
+
+  @override
+  Future<bool?> updatePassword(String newPassword) async {
+    try {
+      await firebaseAuth.currentUser!.updatePassword(newPassword);
+      return true;
+    } catch (e) {
+      debugPrint("Update error: ${e.toString()}");
       return false;
     }
   }

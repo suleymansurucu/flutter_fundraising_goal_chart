@@ -359,14 +359,12 @@ class _DonationListPageState extends State<DonationListPage> {
   }
 
   getDonorAmountWithDollars(var donationAmount) {
-    debugPrint('donation Amount : $donationAmount');
     if (donationAmount == null) {
       return Text('N/A');
     }
     var oCcy = NumberFormat("#,##0.00", "en_US");
 
     var currency = fundraisingModel!.currency;
-    debugPrint('currency : ${currency}');
 
     if (currency == CurrencyDropDownList.dollar.label) {
       return Text(

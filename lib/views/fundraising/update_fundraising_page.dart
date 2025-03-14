@@ -103,53 +103,81 @@ class _UpdateFundraisingPageState extends State<UpdateFundraisingPage> {
                 EasyStepper(
                   activeStep: fundraisingPageViewModels.activeStep,
                   lineStyle: LineStyle(
-                    lineLength: 60,
-                    lineThickness: 4,
-                    lineSpace: 5,
-                    lineType: LineType.dashed
+                    lineLength: 80, // Çizgiyi biraz daha uzun yaparak daha şık gösteriyoruz
+                    lineThickness: 3,
+                    lineSpace: 8,
                   ),
-                  stepShape: StepShape.rRectangle,
-                  stepBorderRadius: 15,
-                  borderThickness: 2,
-                  internalPadding: 10,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-                  stepRadius: 40,
-                  finishedStepBorderColor: Colors.green.shade500,
-                  finishedStepBackgroundColor: Colors.green.shade200,
+                  stepShape: StepShape.circle, // Dikdörtgen yerine yuvarlak adımlar
+                  stepBorderRadius: 20,
+                  borderThickness: 3,
+                  internalPadding: 12,
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                  stepRadius: 32, // Daha büyük adım noktaları
+                  finishedStepBorderColor: Colors.green.shade600,
+                  finishedStepBackgroundColor: Colors.green.shade300,
                   activeStepIconColor: Colors.white,
-                  activeStepBorderColor: Constants.primary,
-                  activeStepBackgroundColor: Constants.primary,
+                  activeStepBackgroundColor: Colors.orangeAccent.shade200,
+                  activeStepBorderColor: Colors.orange.shade700,
+                  activeStepBorderType: BorderType.normal, // Düz sınır, daha temiz bir görünüm
                   showLoadingAnimation: false,
                   enableStepTapping: true,
                   steps: [
                     EasyStep(
-                      customStep: Icon(Icons.info_outline,
-                          size: 35,
+                      customStep: Icon(
+                        Icons.info_outline,
+                        size: 32,
+                        color: fundraisingPageViewModels.activeStep >= 0
+                            ? Colors.blueAccent.shade700
+                            : Colors.grey.shade400,
+                      ),
+                      customTitle: Text(
+                        'General Info',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
                           color: fundraisingPageViewModels.activeStep >= 0
-                              ? Constants.primary
-                              : Colors.grey),
-                      customTitle: const Text('General Info',
-                          textAlign: TextAlign.center),
+                              ? Colors.blueAccent.shade700
+                              : Colors.grey.shade500,
+                        ),
+                      ),
                     ),
                     EasyStep(
-                      customStep: Icon(Icons.group,
-                          size: 35,
+                      customStep: Icon(
+                        Icons.group,
+                        size: 32,
+                        color: fundraisingPageViewModels.activeStep >= 1
+                            ? Colors.blueAccent.shade700
+                            : Colors.grey.shade400,
+                      ),
+                      customTitle: Text(
+                        'Community Setup',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
                           color: fundraisingPageViewModels.activeStep >= 1
-                              ? Constants.primary
-                              : Colors.grey),
-                      customTitle: const Text('Community Setup',
-                          textAlign: TextAlign.center),
+                              ? Colors.blueAccent.shade700
+                              : Colors.grey.shade500,
+                        ),
+                      ),
                     ),
                     EasyStep(
-                      customStep: Icon(Icons.check_circle,
-                          size: 35,
+                      customStep: Icon(
+                        Icons.check_circle,
+                        size: 32,
+                        color: fundraisingPageViewModels.activeStep >= 2
+                            ? Colors.blueAccent.shade700
+                            : Colors.grey.shade400,
+                      ),
+                      customTitle: Text(
+                        'Review & Submit',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
                           color: fundraisingPageViewModels.activeStep >= 2
-                              ? Constants.primary
-                              : Colors.grey),
-                      customTitle: const Text('Review & Submit',
-                          textAlign: TextAlign.center,),
-
+                              ? Colors.blueAccent.shade700
+                              : Colors.grey.shade500,
+                        ),
+                      ),
                     ),
                   ],
                 ),

@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_fundraising_goal_chart/locator.dart';
 import 'package:flutter_fundraising_goal_chart/models/fundraising_model.dart';
 import 'package:flutter_fundraising_goal_chart/models/user_model.dart';
@@ -22,6 +24,12 @@ class UserViewModels with ChangeNotifier implements AuthBase, FirestoreDbBase {
 
   String? get fullName => _fullName;
 
+  String? _signInErrorMessage;
+  String? _errorMessage;
+
+  String? get signInErrorMessage => _signInErrorMessage;
+
+  String? get errorMessage => _errorMessage;
   String? emailError;
   String? userNameError;
   String? passwordError;
@@ -73,6 +81,33 @@ class UserViewModels with ChangeNotifier implements AuthBase, FirestoreDbBase {
       isValid = false;
     } else {
       userNameError = null;
+    }
+
+    notifyListeners();
+    return isValid;
+  }
+
+  bool validateChangePassword(passwordController, confirmPasswordController) {
+    bool isValid = true;
+
+    if (passwordController.text.isEmpty) {
+      passwordError = "Password cannot be empty";
+      isValid = false;
+    } else if (passwordController.text.length < 6) {
+      passwordError = "Password must be at least 6 characters long";
+      isValid = false;
+    } else {
+      passwordError = null;
+    }
+
+    if (confirmPasswordController.text.isEmpty) {
+      confirmPasswordError = "Please confirm your password";
+      isValid = false;
+    } else if (confirmPasswordController.text != passwordController.text) {
+      confirmPasswordError = "Passwords do not match";
+      isValid = false;
+    } else {
+      confirmPasswordError = null;
     }
 
     notifyListeners();
@@ -132,12 +167,21 @@ class UserViewModels with ChangeNotifier implements AuthBase, FirestoreDbBase {
       UserModel? userModel =
           await userRepository.signInWithEmailAndPassword(email, password);
       _userModel = userModel;
+      _signInErrorMessage = null;
       _setState(ViewState.Idle);
       return userModel;
     } catch (e) {
+      _signInErrorMessage = e.toString();
+    } finally {
       _setState(ViewState.Idle);
-      return null;
+      // _signInErrorMessage = null;
     }
+    return null;
+  }
+
+  void clearError() {
+    _signInErrorMessage = null;
+    notifyListeners();
   }
 
   @override
@@ -188,7 +232,10 @@ class UserViewModels with ChangeNotifier implements AuthBase, FirestoreDbBase {
   // Yardımcı metod: State'i güncelle ve UI'ı bildir
   void _setState(ViewState state) {
     _viewState = state;
-    notifyListeners();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   void _setFullName(String value) {
@@ -260,6 +307,48 @@ class UserViewModels with ChangeNotifier implements AuthBase, FirestoreDbBase {
       _setState(ViewState.Idle);
     } catch (e) {
       _setState(ViewState.Idle);
+    }
+  }
+
+  @override
+  Future<bool?> sendPasswordResetEmail(String email) async {
+    try {
+      _setState(ViewState.Busy);
+      bool? result = await userRepository.sendPasswordResetEmail(email);
+
+      _setState(ViewState.Idle);
+      return result;
+    } catch (e) {
+      _setState(ViewState.Idle);
+      return false;
+    }
+  }
+
+  @override
+  Future<User?> checkCurrentUser() async {
+    try {
+      _setState(ViewState.Busy);
+      User result = userRepository.checkCurrentUser() as User;
+
+      _setState(ViewState.Idle);
+      return result;
+    } catch (e) {
+      _setState(ViewState.Idle);
+      return null;
+    }
+  }
+
+  @override
+  Future<bool?> updatePassword(String newPassword) async {
+    try {
+      _setState(ViewState.Busy);
+      userRepository.updatePassword(newPassword);
+
+      _setState(ViewState.Idle);
+      return true;
+    } catch (e) {
+      _setState(ViewState.Idle);
+      return false;
     }
   }
 }

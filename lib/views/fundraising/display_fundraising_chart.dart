@@ -339,21 +339,17 @@ class _DisplayFundraisingChartState extends State<DisplayFundraisingChart> {
         widget.userID, widget.fundraisingID);
     var target = await fundraisingViewModels.getAllFundraiserTarget(
         widget.userID, widget.fundraisingID);
-    debugPrint('Gormek istedigim ${snapshot.toString()}');
-    debugPrint('Fundraising Graphic Type: ${snapshot!.graphicType}');
-    debugPrint('Fundraising Unique Name: ${snapshot!.uniqueName}');
-    debugPrint(snapshot!.currency);
-    debugPrint('Get Fundraising Screen');
+
     setState(() {
       fundraisingData = snapshot;
       widget.fundraisingTarget = target;
-      widget.communityName = snapshot.uniqueName;
+      widget.communityName = snapshot!.uniqueName;
     });
   }
 
   Widget getCommunities() {
     final FundraisingViewModels fundraisingViewModels =
-        Provider.of<FundraisingViewModels>(context, listen: false);
+    Provider.of<FundraisingViewModels>(context, listen: false);
 
     return FutureBuilder<FundraisingModel?>(
       future: fundraisingViewModels.getFundraiser(
@@ -368,45 +364,73 @@ class _DisplayFundraisingChartState extends State<DisplayFundraisingChart> {
             padding: EdgeInsets.symmetric(horizontal: 4),
             child: snapshot.data!.communities.length == 1
                 ? SizedBox()
-                : BuildElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        widget.communityName = community.name;
-                        widget.fundraisingTarget = community.goal;
-                      });
-                    },
-                    buttonText: community.name,
-                    buttonColor: Colors.grey.shade300,
-                    textColor: Constants.textColor),
+                : ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey.shade100,
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 4,
+              ),
+              onPressed: () {
+                setState(() {
+                  widget.communityName = community.name;
+                  widget.fundraisingTarget = community.goal;
+                });
+              },
+              child: Text(
+                community.name,
+                style: TextStyle(color: Constants.textColor, fontSize: 16),
+              ),
+            ),
           );
         }).toList();
 
+        // "General" Butonunu Ekle
         if (snapshot.data!.communities.length > 1) {
           buttons.add(Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: BuildElevatedButton(
-                onPressed: () async {
-                  var allTarget =
-                      await fundraisingViewModels.getAllFundraiserTarget(
-                          widget.userID, widget.fundraisingID);
-                  setState(() {
-                    widget.communityName = snapshot.data!.uniqueName;
-                    widget.fundraisingTarget = allTarget;
-                  });
-                },
-                buttonText: 'General',
-                buttonColor: Colors.grey.shade300,
-                textColor: Constants.textColor),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey.shade100,
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 4,
+              ),
+              onPressed: () async {
+                var allTarget =
+                await fundraisingViewModels.getAllFundraiserTarget(
+                    widget.userID, widget.fundraisingID);
+                setState(() {
+                  widget.communityName = snapshot.data!.uniqueName;
+                  widget.fundraisingTarget = allTarget;
+                });
+              },
+              child: Text(
+                'General',
+                style: TextStyle(color: Constants.textColor, fontSize: 16),
+              ),
+            ),
           ));
         }
 
-        return Wrap(
-          spacing: 8.0,
-          children: buttons,
+        return Container(
+          height: 50, // Buton yüksekliğini sabit tut
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal, // Yatay kaydırma ekledik
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: buttons,
+            ),
+          ),
         );
       },
     );
   }
+
 
   Widget getDonorNameWithHide(String donorName) {
     String? maskOnDonorName;

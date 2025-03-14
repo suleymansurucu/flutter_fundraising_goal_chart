@@ -5,102 +5,32 @@ import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class BuildDrawMenu extends StatelessWidget {
-  String? fullName;
+class BuildDrawMenu extends StatefulWidget {
+    const BuildDrawMenu({super.key});
 
-  BuildDrawMenu({super.key});
+  @override
+  State<BuildDrawMenu> createState() => _BuildDrawMenuState();
+}
+
+class _BuildDrawMenuState extends State<BuildDrawMenu> {
+  String fullName = "Guest";
 
   @override
   Widget build(BuildContext context) {
-    _getFullName(context);
-
     return Drawer(
       backgroundColor: Constants.background,
       child: Consumer<UserViewModels>(
-        builder: (context, userViewModel, widget) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(color: Constants.primary),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.account_circle, color: Colors.white, size: 50),
-                      const SizedBox(height: 10),
-                      Text(
-                        fullName != null && fullName!.isNotEmpty
-                            ? 'Hello, $fullName!'
-                            : 'Welcome to Fundraising App',
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 18),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.home, color: Colors.black),
-                title: const Text('Home'),
-                onTap: () {
-                  context.go(RouteNames.home);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.info, color: Colors.black),
-                title: const Text('Profile'),
-                onTap: () {
-                  context.go(RouteNames.userProfile);
-                },
-              ),
-              ExpansionTile(
-                title: Text('Fundraising Goal Chart Tools'),
-                leading: const Icon(Icons.volunteer_activism,
-                    color: Colors.black),
-                children: [
-                  ListTile(
+        builder: (context, userViewModel, child) {
 
-                    title: const Text('Create New Fundraising Display Chart',style: TextStyle(fontSize: 14),),
-                    onTap: () {
-                      context.go(RouteNames.fundraisingSetup);
-                    },
-                  ),
-                  ListTile(
-                    title: const Text('Previous Fundraising Display Chart',style: TextStyle(fontSize: 14),),
-                    onTap: () {
-                      context.go(RouteNames.allFundraisingShowList);
-                    },
-                  ),
-                  ListTile(
-                    title: const Text('Donation Enter For Fundraising',style: TextStyle(fontSize: 14),),
-                    onTap: () {
-                      context.go(RouteNames.entryDonation);
-                    },
-                  ),
-                  ListTile(
-                    title: const Text('List Of Donations',style: TextStyle(fontSize: 14),),
-                    onTap: () {
-                      context.go(RouteNames.donationList);
-                    },
-                  ),
-                ],
-              ),
-              const Divider(),
-              ListTile(
-                leading: const Icon(Icons.login, color: Colors.black),
-                title: Text(fullName != null && fullName!.isNotEmpty
-                    ? 'Go To Create Fundraising Screen'
-                    : 'Sign In'),
-                onTap: () {
-                  Navigator.pop(context);
-                  fullName != null && fullName!.isNotEmpty
-                      ? context.go(RouteNames.signUp)
-                      : context.go(RouteNames.singIn);
-                },
-              ),
+          _getFullName(context);
+          debugPrint('username : $fullName');
+
+          return Column(
+            children: [
+              _buildHeader(context, fullName),
+              Expanded(child: _buildMenuItems(context)),
+              _buildFooter(context, fullName.isNotEmpty),
+              _buildCopyright(),
             ],
           );
         },
@@ -108,13 +38,123 @@ class BuildDrawMenu extends StatelessWidget {
     );
   }
 
+  Widget _buildHeader(BuildContext context, String fullName) {
+    return Container(
+      height: 200,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.deepPurple.shade700,
+            Colors.indigo.shade500,
+            Colors.blue.shade400,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: DrawerHeader(
+        decoration: const BoxDecoration(
+          color: Colors.transparent,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const CircleAvatar(
+              radius: 40,
+              backgroundColor: Colors.white,
+              child: Icon(Icons.account_circle, color: Colors.deepPurple, size: 60),
+            ),
+            const SizedBox(height: 15),
+            Text(
+              fullName.isNotEmpty ? 'Hello, $fullName!' : 'Welcome to Fundraising App',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuItems(BuildContext context) {
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        _menuItem(Icons.home, 'Home', () => context.go(RouteNames.home)),
+        _menuItem(Icons.settings, 'About Us', () => context.go(RouteNames.aboutUs)),
+        _buildExpandableMenu(context),
+        _menuItem(Icons.person, 'Edit Profile', () => context.go(RouteNames.userProfile)),
+        _menuItem(Icons.mail, 'Contact Us', () => context.go(RouteNames.contactUs)),
+      ],
+    );
+  }
+
+  Widget _buildExpandableMenu(BuildContext context) {
+    return ExpansionTile(
+      title: const Text('Fundraising Tools', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      leading: const Icon(Icons.volunteer_activism, color: Colors.deepPurple),
+      children: [
+        _menuItem(Icons.add_chart, 'Create New Fundraising', () => context.go(RouteNames.fundraisingSetup)),
+        _menuItem(Icons.history, 'Previous Fundraising Charts', () => context.go(RouteNames.allFundraisingShowList)),
+        _menuItem(Icons.monetization_on, 'Enter Donation', () => context.go(RouteNames.entryDonation)),
+        _menuItem(Icons.list, 'Donation List', () => context.go(RouteNames.donationList)),
+      ],
+    );
+  }
+
+  Widget _buildFooter(BuildContext context, bool isLoggedIn) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: ListTile(
+        leading: const Icon(Icons.logout, color: Colors.redAccent),
+        title: Text(
+          isLoggedIn ? 'Logout' : 'Sign In',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+          isLoggedIn ? context.go(RouteNames.home) : context.go(RouteNames.singIn);
+        },
+      ),
+    );
+  }
+
+  Widget _buildCopyright() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Center(
+        child: Text(
+          '© 2025 Fundraising App. All Rights Reserved.',
+          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+        ),
+      ),
+    );
+  }
+
+  Widget _menuItem(IconData icon, String title, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.deepPurple.shade700),
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      ),
+      onTap: onTap,
+    );
+  }
+
   void _getFullName(BuildContext context) async {
     final userViewModels = Provider.of<UserViewModels>(context, listen: false);
-    final _userviewModel =
-        await userViewModels.getUserData(userViewModels.userModel!.userID);
+    final _userviewModel = await userViewModels.getUserData(userViewModels.userModel!.userID);
     debugPrint(
         'getfullNamedeyiz biz bu userview model${userViewModels.fullName}');
-    fullName = _userviewModel!.fullName;
+    Future.delayed(Duration(milliseconds: 400));
+    fullName = _userviewModel!.fullName!;
     debugPrint('method icerisinde $fullName');
   }
 }

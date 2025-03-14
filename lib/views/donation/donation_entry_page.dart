@@ -167,7 +167,6 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
         _donorNameController.clear();
         _donationAmountController.clear();
       } catch (e) {
-        debugPrint(e.toString());
       }
     } else {
       _formkey.currentState!.reset();

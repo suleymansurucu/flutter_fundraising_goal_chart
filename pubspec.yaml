@@ -51,6 +51,7 @@ dependencies:
   path_provider: ^2.1.5
   html: ^0.15.0
   easy_stepper: ^0.8.5+1
+  flutter_widget_from_html: ^0.16.0
 
 
 

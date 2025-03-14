@@ -5,15 +5,14 @@ import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
   final Color backgroundColor;
   final Color textColor;
   final List<Widget>? actions;
   final GlobalKey<ScaffoldState>? scaffoldKey;
-  String? fullName;
 
-  CustomAppBar({
+  const CustomAppBar({
     super.key,
     required this.title,
     this.backgroundColor = Constants.primary,
@@ -22,24 +21,55 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.scaffoldKey,
   });
 
+
+
+  @override
+  State<CustomAppBar> createState() => _CustomAppBarState();
+
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
+  @override
+  void initState() {
+    _getFullName(context);
+    super.initState();
+  }
+  String? fullName;
+
   @override
   Consumer<UserViewModels> build(BuildContext context) {
-    final userViewModels = Provider.of<UserViewModels>(context, listen: false);
+     final userViewModels = Provider.of<UserViewModels>(context, listen: false);
 
-    _getFullName(context);
+
 
     return Consumer<UserViewModels>(
       builder: (context, userViewModels, child) {
         return AppBar(
           title: Text(
-            title,
-            style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
+            widget.title,
+            style: TextStyle(color: widget.textColor, fontWeight: FontWeight.bold),
           ),
-          backgroundColor: backgroundColor,
+
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.deepPurple.shade700,
+                  Colors.indigo.shade500,
+                  Colors.blue.shade400,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
           leading: IconButton(
             icon: const Icon(Icons.menu, color: Colors.white),
             onPressed: () {
-              scaffoldKey?.currentState?.openDrawer();
+              widget.scaffoldKey?.currentState?.openDrawer();
             },
           ),
           actions: [
@@ -49,7 +79,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 child: Row(
                   children: [
                     Text("Hello, $fullName!",
-                        style: TextStyle(color: textColor)),
+                        style: TextStyle(color: widget.textColor)),
                     TextButton(
                       onPressed: () async {
                         await userViewModels.signOutWithEmailAndPassword(
@@ -61,7 +91,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       child: Text(
                         "Sign Out",
                         style: TextStyle(
-                          color: textColor,
+                          color: widget.textColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -77,27 +107,23 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 child: Text(
                   'Sign In',
                   style:
-                      TextStyle(color: textColor, fontWeight: FontWeight.bold),
+                      TextStyle(color: widget.textColor, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
-            if (actions != null) ...actions!,
+            if (widget.actions != null) ...widget.actions!,
           ],
         );
       },
     );
   }
 
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
 
   void _getFullName(BuildContext context) async {
     final userViewModels = Provider.of<UserViewModels>(context, listen: false);
-    final _userviewModel =
-        await userViewModels.getUserData(userViewModels.userModel!.userID);
-    debugPrint(
-        'getfullNamedeyiz biz bu userview model${userViewModels.fullName}');
+    final _userviewModel = await userViewModels.getUserData(userViewModels.userModel!.userID);
+
     fullName = _userviewModel!.fullName;
-    debugPrint('method icerisinde $fullName');
   }
 }

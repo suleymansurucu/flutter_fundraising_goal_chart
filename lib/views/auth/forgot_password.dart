@@ -1,8 +1,15 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_fundraising_goal_chart/core/routes/route_names.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_Text_Form_Field.dart';
+import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_draw_menu.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_elevated_button.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_text_for_form.dart';
+import 'package:flutter_fundraising_goal_chart/core/utils/constants/custom_app_bar.dart';
+import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -12,15 +19,47 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  final TextEditingController _emailController=TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldUserForgotPassword = GlobalKey<ScaffoldState>();
 
-  void _forgotPassword(){
+  void _forgotPassword() async {
     print('Your Email Adress ${_emailController.text}');
+    final UserViewModels userViewModels =
+    Provider.of<UserViewModels>(context, listen: false);
+    bool? result = await userViewModels.sendPasswordResetEmail(_emailController.text);
+
+    Future.delayed(Duration(milliseconds: 300), () async {
+      if (mounted) {
+        if(result!)  {
+          await Flushbar(
+            title: 'Hello ${_emailController.text}!',
+            message: 'You should check your email box for reset your email',
+            duration: Duration(seconds: 3),
+            titleColor: Constants.background,
+            messageColor: Constants.background,
+            backgroundColor: Constants.primary,
+            maxWidth: 600,
+            titleSize: 32,
+            showProgressIndicator: true,
+            flushbarPosition: FlushbarPosition.TOP,
+            margin: EdgeInsets.all(20),
+          ).show(context);
+          context.push(RouteNames.singIn);
+        }
+      }
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldUserForgotPassword,
+      appBar: CustomAppBar(
+        title: 'Forgot Password',
+        scaffoldKey: _scaffoldUserForgotPassword,
+      ),
+      drawer: BuildDrawMenu(),
       backgroundColor: Constants.background,
       body: Center(
         child: SingleChildScrollView(

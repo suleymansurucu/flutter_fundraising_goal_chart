@@ -5,6 +5,7 @@ import 'package:flutter_fundraising_goal_chart/locator.dart';
 import 'package:flutter_fundraising_goal_chart/models/fundraising_model.dart';
 import 'package:flutter_fundraising_goal_chart/services/user_repository.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/donation_view_models.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 enum ViewState { Busy, Idle }
@@ -211,6 +212,10 @@ class FundraisingViewModels with ChangeNotifier {
             child: snapshot.data!.communities.length == 1
                 ? SizedBox()
                 : BuildElevatedButton(
+              paddingHorizontal: 10,
+                paddingVertical: 8,
+                buttonFontSize: 14,
+                borderRadius: 5,
                     onPressed: () {
                       _communityName = community.name;
                       _fundraiserTarget = community.goal;
@@ -221,8 +226,9 @@ class FundraisingViewModels with ChangeNotifier {
                           _communityName!, communityCount!);
                     },
                     buttonText: community.name,
-                    buttonColor: Colors.grey.shade200,
-                    textColor: Constants.textColor),
+                    buttonColor: Colors.grey.shade100,
+                    textColor: Constants.textColor,
+            ),
           );
         }).toList();
 
@@ -230,6 +236,10 @@ class FundraisingViewModels with ChangeNotifier {
           buttons.add(Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: BuildElevatedButton(
+                paddingHorizontal: 10,
+                paddingVertical: 8,
+                buttonFontSize: 14,
+                borderRadius: 5,
                 onPressed: () async {
                   var allTarget =
                       await getAllFundraiserTarget(userID, fundraisingID);
@@ -242,16 +252,22 @@ class FundraisingViewModels with ChangeNotifier {
                       userID, fundraisingID, 'general', communityCount!);
                 },
                 buttonText: 'General',
-                buttonColor: Colors.grey.shade200,
+                buttonColor: Colors.grey.shade100,
                 textColor: Constants.textColor),
           ));
         }
 
         notifyListeners();
 
-        return Wrap(
-          spacing: 8.0,
-          children: buttons,
+        return Container(
+          height: 50, // Buton yüksekliğini sabit tut
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal, // Yatay kaydırma ekledik
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: buttons,
+            ),
+          ),
         );
       },
     );
@@ -297,7 +313,4 @@ class FundraisingViewModels with ChangeNotifier {
     _fundraisingID = result;
     notifyListeners();
   }
-  
-
-
 }

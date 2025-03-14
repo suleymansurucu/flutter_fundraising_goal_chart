@@ -6,7 +6,11 @@ import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_drop_d
 import 'package:flutter_fundraising_goal_chart/locator.dart';
 import 'package:flutter_fundraising_goal_chart/models/fundraising_model.dart';
 import 'package:flutter_fundraising_goal_chart/services/user_repository.dart';
+import 'package:flutter_fundraising_goal_chart/view_models/fundraising_view_models.dart';
+import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class FundraisingPageViewModels with ChangeNotifier {
   final UserRepository userRepository = locator<UserRepository>();
@@ -108,13 +112,12 @@ class FundraisingPageViewModels with ChangeNotifier {
     notifyListeners();
   }
 
-  void _addCommunityFields() {
-    _communityNameControllers.clear();
-    _communityGoalControllers.clear();
+  void addCommunityFields() {
     for (int i = 0; i < _communityCount; i++) {
       _communityNameControllers.add(TextEditingController());
       _communityGoalControllers.add(TextEditingController());
     }
+
     notifyListeners();
   }
 
@@ -156,7 +159,7 @@ class FundraisingPageViewModels with ChangeNotifier {
 
   void setDropDownCommunityCounts(int? newValue) {
     _communityCount = newValue ?? 1;
-    _addCommunityFields();
+    addCommunityFields();
     notifyListeners();
   }
 
@@ -235,12 +238,13 @@ class FundraisingPageViewModels with ChangeNotifier {
               margin: EdgeInsets.all(20),
             ).show(context);
 
-      result == true ? context.go(RouteNames.allFundraisingShowList) : SizedBox();
-
+      result == true
+          ? context.go(RouteNames.allFundraisingShowList)
+          : SizedBox();
     } catch (e) {
       debugPrint(e.toString());
     }
-    _activeStep=0;
+    _activeStep = 0;
     notifyListeners();
   }
 
@@ -257,6 +261,77 @@ class FundraisingPageViewModels with ChangeNotifier {
     if (_activeStep > 0) {
       _activeStep--;
     }
+    notifyListeners();
+  }
+
+  Future<void> submitForm(String userID, BuildContext context) async {
+    List<CommunityFundraising> communities = [];
+    for (int i = 0; i < _communityCount; i++) {
+      String goalText = _communityGoalControllers[i].text.trim();
+      communities.add(CommunityFundraising(
+        name: _communityNameControllers[i].text,
+        goal: double.tryParse(goalText) ?? 0,
+      ));
+    }
+
+    String fundraisingID = Uuid().v4();
+
+    Map<String, dynamic> createFundraising = {
+      'fundraisingID': Uuid().v4(),
+      'userID': userID,
+      'fundraisingID': fundraisingID,
+      'uniqueName': _fundraisingUniqueName.text,
+      'fundraisingSlogan': _fundraisingSloganController.text,
+      'currency': _selectedCurrency.label,
+      'showDonorNames': _selectedYesOrNoForDonorNames.label,
+      'showDonorAmount': _selectedYesOrNoForDonorAmount.label,
+      'goalChartType': _selectedgraphicType.label,
+      'communities': communities.map((community) {
+        return {
+          'communityName': community.name,
+          'communityGoal': community.goal,
+        };
+      }).toList(),
+    };
+
+    final FundraisingViewModels fundraisingViewModels =
+        Provider.of<FundraisingViewModels>(context, listen: false);
+    var resul = await fundraisingViewModels.createFundraising(
+        createFundraising, fundraisingID, userID);
+    if (resul) {
+      await Flushbar(
+        title: 'You have created fundraising display page',
+        message:
+            'You are forwarding a list of your fundraising. You can find this page on your display page.',
+        duration: Duration(seconds: 3),
+        titleColor: Constants.background,
+        messageColor: Constants.background,
+        backgroundColor: Constants.primary,
+        maxWidth: 600,
+        titleSize: 32,
+        messageSize: 22,
+        showProgressIndicator: true,
+        flushbarPosition: FlushbarPosition.TOP,
+        margin: EdgeInsets.all(20),
+      ).show(context);
+      context.go(RouteNames.allFundraisingShowList);
+    } else {
+      await Flushbar(
+        title: 'You do not have created fundraising display page',
+        message: 'Please enter your information.',
+        duration: Duration(seconds: 3),
+        titleColor: Constants.background,
+        messageColor: Constants.background,
+        backgroundColor: Constants.primary,
+        maxWidth: 600,
+        titleSize: 32,
+        messageSize: 22,
+        showProgressIndicator: true,
+        flushbarPosition: FlushbarPosition.TOP,
+        margin: EdgeInsets.all(20),
+      ).show(context);
+    }
+    _activeStep = 0;
     notifyListeners();
   }
 }

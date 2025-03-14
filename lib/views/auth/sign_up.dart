@@ -24,8 +24,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _passwordConfirmController =
-  TextEditingController();
+  final TextEditingController _passwordConfirmController = TextEditingController();
 
   void _singUp() async {
     final UserViewModels userViewModels =
@@ -37,7 +36,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
       var user = await userViewModels.createWithInEmailAndPassword(
           email, passwordConfirm);
-      print('Full Name save etmeden kontrol'+user!.fullName.toString());
 
       if (user != null) {
         var newSaveUser=UserModel(userID: user.userID, email: email,createdAt: DateTime.timestamp(), fullName: fullName);
@@ -60,13 +58,9 @@ class _SignUpPageState extends State<SignUpPage> {
             MaterialPageRoute(builder: (context) => FundraisingSetupPage()));
       }
 
-      debugPrint(user!.userID);
     }
 
-    debugPrint('Email: ${_emailController.text}');
-    debugPrint('FullName: ${_fullNameController.text}');
-    debugPrint('Password: ${_passwordController.text}');
-    debugPrint('Confirm Password: ${_passwordConfirmController.text}');
+
   }
 
   void _singIn() {
@@ -136,7 +130,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       errorText: userViewModels.userNameError,
                       onSaved: (value) {
                         fullName = value!;
-                        debugPrint('Widget $fullName');
                       },
                     ),
                     BuildTextForForm(

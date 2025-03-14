@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_fundraising_goal_chart/locator.dart';
 import 'package:flutter_fundraising_goal_chart/models/fundraising_model.dart';
@@ -46,7 +47,7 @@ class UserRepository with ChangeNotifier implements AuthBase, FirestoreDbBase {
             .signInWithEmailAndPassword(email, password);
         return userModel;
       } catch (e) {
-        debugPrint(e.toString());
+        throw e;
       }
     }
     return null;
@@ -264,4 +265,53 @@ class UserRepository with ChangeNotifier implements AuthBase, FirestoreDbBase {
     }
     return null;
   }
+
+  @override
+  Future<bool?> sendPasswordResetEmail(String email) async{
+    if (appMode == AppMode.DEBUG) {
+      //TODO: I will create test data with connection
+    } else {
+      try {
+        await firebaseAuthService.sendPasswordResetEmail(email);
+        return true;
+      } catch (e) {
+        debugPrint(e.toString());
+        return false;
+      }
+    }
+    return false;
+  }
+
+  @override
+  Future<User?> checkCurrentUser() async{
+    if (appMode == AppMode.DEBUG) {
+      //TODO: I will create test data with connection
+    } else {
+      try {
+        return firebaseAuthService.currentUser;
+
+      } catch (e) {
+        debugPrint(e.toString());
+        return null;
+      }
+    }
+    return null;
+  }
+
+  @override
+  Future<bool?> updatePassword(String newPassword) async {
+    if (appMode == AppMode.DEBUG) {
+      //TODO: I will create test data with connection
+    } else {
+      try {
+        firebaseAuthService.updatePassword(newPassword);
+        return true;
+      } catch (e) {
+        debugPrint(e.toString());
+        return false;
+      }
+    }
+    return false;
+  }
+
 }

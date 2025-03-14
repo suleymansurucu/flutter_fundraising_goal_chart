@@ -9,6 +9,10 @@ class RouteNames {
   static const String entryDonation = '/entry-donation';
   static const String allFundraisingShowList = '/all-fundraiser';
   static const String donationList = '/donation-list';
+  static const String changePassword = '/change-password';
+  static const String aboutUs = '/about-us';
+  static const String contactUs = '/contact-us';
+
 
 
 }

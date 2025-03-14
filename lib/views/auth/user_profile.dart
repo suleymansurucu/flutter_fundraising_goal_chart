@@ -1,5 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_fundraising_goal_chart/core/routes/route_names.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_Text_Form_Field.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_draw_menu.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_elevat
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_text_for_form.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/custom_app_bar.dart';
 import 'package:flutter_fundraising_goal_chart/view_models/user_view_models.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class UserProfile extends StatefulWidget {
@@ -28,8 +30,7 @@ class _UserProfileState extends State<UserProfile> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _communityNameController =
-      TextEditingController();
+  final TextEditingController _communityNameController = TextEditingController();
   final TextEditingController _addressLine1Controller = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
@@ -139,7 +140,6 @@ class _UserProfileState extends State<UserProfile> {
                             errorText: userViewModels.addressLine1Error,
                             onSaved: (value) {
                               addressLine1 = value!;
-                              debugPrint('Widget $addressLine1');
                             },
                           ),
                           SizedBox(height: 15),
@@ -163,7 +163,6 @@ class _UserProfileState extends State<UserProfile> {
                             errorText: userViewModels.cityError,
                             onSaved: (value) {
                               city = value!;
-                              debugPrint('Widget $city');
                             },
                           ),
                           SizedBox(height: 15),
@@ -187,7 +186,6 @@ class _UserProfileState extends State<UserProfile> {
                             errorText: userViewModels.stateError,
                             onSaved: (value) {
                               state = value!;
-                              debugPrint('Widget $fullName');
                             },
                           ),
                           SizedBox(height: 15),
@@ -211,7 +209,7 @@ class _UserProfileState extends State<UserProfile> {
                             errorText: userViewModels.zipCodeError,
                             onSaved: (value) {
                               zipCode = value!;
-                              debugPrint('Widget $zipCode');
+
                             },
                           ),
                           SizedBox(height: 15),
@@ -331,10 +329,7 @@ class _UserProfileState extends State<UserProfile> {
     if (updatedFields.isNotEmpty) {
       bool? result = await userViewModels.updateUserProfile(userID, updatedFields);
       if (result == true) {
-        debugPrint('true gorduk');
       }  else {
-        debugPrint('false gorduk');
-
       }
         await Flushbar(
           title: 'Updated... ${_fullNameController.text}',
@@ -354,17 +349,16 @@ class _UserProfileState extends State<UserProfile> {
 
   }
 
-  void _changeThePassword() {}
+  void _changeThePassword() {
+    context.push(RouteNames.changePassword);
+  }
 
   void _fetchUserData() async {
     final UserViewModels userViewModels =
     Provider.of<UserViewModels>(context, listen: false);
     var fetchedUser =
     await userViewModels.getUserData(userViewModels.userModel!.userID);
-    debugPrint('Fetched User: $fetchedUser');
-    debugPrint(userViewModels.state.toString());
 
-    debugPrint(fetchedUser.toString());
     if (fetchedUser != null) {
       _emailController.text =
       fetchedUser.email.isNotEmpty ? fetchedUser.email : '';
