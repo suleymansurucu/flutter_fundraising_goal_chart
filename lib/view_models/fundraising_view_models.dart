@@ -276,6 +276,11 @@ class FundraisingViewModels with ChangeNotifier {
   List<String>? _list = [];
 
   List<String>? get list => _list;
+  set list(List<String>? newList) {
+    _list = newList;
+    notifyListeners(); // Değişiklik olduğunda dinleyicileri bilgilendir
+  }
+
   String? _thisFundraising;
 
   String? get thisFundraising => _thisFundraising;
@@ -291,7 +296,7 @@ class FundraisingViewModels with ChangeNotifier {
 
     if (fetchedList != null && fetchedList.isNotEmpty) {
       _list = fetchedList;
-      _thisFundraising = _list![0]; // Default selection
+      _thisFundraising = _list![0];// Default selection
     }
 
     var result =

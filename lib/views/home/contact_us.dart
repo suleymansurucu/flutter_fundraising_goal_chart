@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_draw_menu.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/custom_app_bar.dart';
-import 'dart:html' as html;
+import 'package:url_launcher/url_launcher.dart';
+
 
 class ContactUs extends StatelessWidget {
   ContactUs({super.key});
@@ -97,8 +98,18 @@ class ContactUs extends StatelessWidget {
     );
   }
 
-  void _sendEmail() {
+  void _sendEmail() async{
     const email = "suleymansurucu95@gmail.com";
-    html.window.open("mailto:$email?subject=Let's Collaborate&body=Hi Suleyman,", "_self");
+    final Uri mail = Uri(
+      scheme: 'mailto',
+      path: email,
+      query: 'subject=Let\'s Collaborate&body=Hi Suleyman,',
+    );
+
+    if (await canLaunchUrl(mail)) {
+    await launchUrl(mail);
+    } else {
+    print("🚨 Mail client açılamadı!");
+    }
   }
 }

@@ -40,24 +40,65 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchDataFromViewModes();
     });
   }
 
   void fetchDataFromViewModes() async {
-    final fundraisingViewModels =
-        Provider.of<FundraisingViewModels>(context, listen: false);
+    print("🔄 fetchDataFromViewModes() başladı...");
 
-    await fundraisingViewModels.fetchData();
-    Future.delayed(Duration(milliseconds: 400));
-    FundraisingID = fundraisingViewModels.fundraisingID;
-    thisFundraising = fundraisingViewModels.thisFundraising;
-    list = fundraisingViewModels.list!;
-    final userViewModels = Provider.of<UserViewModels>(context, listen: false);
-    userID = userViewModels.userModel!.userID;
-    Future.delayed(Duration(milliseconds: 400));
+    try {
+      final fundraisingViewModels =
+          Provider.of<FundraisingViewModels>(context, listen: false);
 
+      await fundraisingViewModels.fetchData().catchError((error) {
+        print("🔥 Firestore Hatası: $error");
+      });
+
+      print("✅ Firestore'dan veri çekildi.");
+      await Future.delayed(Duration(milliseconds: 400));
+
+      if (fundraisingViewModels.fundraisingID != null) {
+        FundraisingID = fundraisingViewModels.fundraisingID;
+        print("✅ FundraisingID: $FundraisingID");
+      } else {
+        print("⚠️ fundraisingID null!");
+      }
+
+      if (fundraisingViewModels.thisFundraising != null) {
+        thisFundraising = fundraisingViewModels.thisFundraising;
+        print("✅ thisFundraising yüklendi.");
+      } else {
+        print("⚠️ thisFundraising null!");
+      }
+
+      if (fundraisingViewModels.list != null) {
+        list = fundraisingViewModels.list!;
+        print("✅ Liste yüklendi: ${list.length} öğe.");
+      } else {
+        list = [];
+        print("⚠️ Liste boş.");
+      }
+
+      final userViewModels =
+          Provider.of<UserViewModels>(context, listen: false);
+
+      if (userViewModels.userModel != null) {
+        userID = userViewModels.userModel!.userID;
+        print("✅ Kullanıcı ID: $userID");
+      } else {
+        print("⚠️ userModel null! Kullanıcı bilgisi alınamadı.");
+      }
+    } catch (e, stackTrace) {
+      print("❌ Genel Hata: $e");
+      print("🔍 Stack Trace: $stackTrace");
+    }
   }
 
   String formatCurrency(double value) {
@@ -166,8 +207,7 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
         ).show(context);
         _donorNameController.clear();
         _donationAmountController.clear();
-      } catch (e) {
-      }
+      } catch (e) {}
     } else {
       _formkey.currentState!.reset();
       _donorNameController.clear();
@@ -188,22 +228,24 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _formKeyForDonationEntry,
-      appBar: CustomAppBar(
-        title: 'Submit Donation',
-        scaffoldKey: _formKeyForDonationEntry,
-      ),
-      drawer: BuildDrawMenu(),
-      // backgroundColor: Constants.background,
-      body: Flexible(
-        child: Container(
+    try {
+      print("🔄 Sayfa build ediliyor...");
+
+      return Scaffold(
+        key: _formKeyForDonationEntry,
+        appBar: CustomAppBar(
+          title: 'Submit Donation',
+          scaffoldKey: _formKeyForDonationEntry,
+        ),
+        drawer: BuildDrawMenu(),
+        body: Container( // Flexible'ı kaldır
           width: double.infinity,
           height: double.infinity,
           decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage('assets/images/background2.png'),
-                fit: BoxFit.cover),
+              image: AssetImage('assets/images/background2.png'),
+              fit: BoxFit.cover,
+            ),
           ),
           child: Column(
             children: [
@@ -234,8 +276,7 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
                       ],
                     ),
                     child: Consumer2<FundraisingViewModels, DonationViewModels>(
-                      builder: (context, fundraisingViewModels,
-                          donationViewModels, widget) {
+                      builder: (context, fundraisingViewModels, donationViewModels, widget) {
                         return Form(
                           key: _formkey,
                           child: Column(
@@ -250,46 +291,36 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
                                     fontWeight: FontWeight.w100),
                               ),
                               const SizedBox(height: 4),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Container(
-                                  width: 400,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Constants.primary, width: 1.5),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                      dropdownColor: Constants.background,
-                                      value:
-                                          fundraisingViewModels.thisFundraising,
-                                      onChanged: (String? newValue) {
-                                        if (newValue != null) {
-                                          fundraisingViewModels
-                                              .onFundraising(newValue);
-                                          // _onFundraising(newValue);
-                                        }
-                                      },
-                                      isExpanded: true,
-                                      items: list.map((String item) {
-                                        return DropdownMenuItem<String>(
-                                          value: item,
-                                          child: Text(item),
-                                        );
-                                      }).toList(),
-                                    ),
+                              if (list.isEmpty)
+                                Text('No fundraising events found', style: TextStyle(color: Colors.red)),
+                              Container(
+                                width: 400,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Constants.primary, width: 1.5),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    dropdownColor: Constants.background,
+                                    value: fundraisingViewModels.thisFundraising,
+                                    onChanged: (String? newValue) {
+                                      if (newValue != null) {
+                                        fundraisingViewModels.onFundraising(newValue);
+                                      }
+                                    },
+                                    isExpanded: true,
+                                    items: list.map((String item) {
+                                      return DropdownMenuItem<String>(
+                                        value: item,
+                                        child: Text(item),
+                                      );
+                                    }).toList(),
                                   ),
                                 ),
                               ),
-                              list.isNotEmpty
-                                  ? SizedBox()
-                                  : Text(
-                                      'To enter a donation or view the fundraising list, you need to create a fundraising first.',
-                                      style: TextStyle(color: Colors.red),
-                                    ),
                               const SizedBox(height: 20),
                               Align(
                                 child: Text(
@@ -303,48 +334,15 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              BuildTextForForm(
-                                  text: 'Please Enter Your Donor\'s Name:',
-                                  textColor: Constants.textColor,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w100),
-                              const SizedBox(height: 4),
-                              BuildTextFormField(
-                                keyBoardType: TextInputType.text,
-                                labelText: 'Donor\'s Name',
-                                hintText: 'Enter Donor Name',
-                                textFormFieldIcon: Icons.title,
-                                textFormFieldIconColor: Constants.accent,
-                                outLineInputBorderColor: Constants.accent,
-                                outLineInputBorderColorOnFocused:
-                                    Constants.primary,
-                                textEditingController: _donorNameController,
-                                errorText: donationViewModels.donorNameError,
-                              ),
-                              const SizedBox(height: 15),
-                              BuildTextForForm(
-                                  text: 'Please Enter Donation Amount:',
-                                  textColor: Constants.textColor,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w100),
-                              const SizedBox(height: 4),
-                              BuildTextFormField(
-                                keyBoardType: TextInputType.number,
-                                labelText: 'Donation Amount',
-                                hintText: 'Enter Donation Amount',
-                                textFormFieldIcon: Icons.mode_edit_sharp,
-                                textFormFieldIconColor: Constants.accent,
-                                outLineInputBorderColor: Constants.accent,
-                                inputFormatters: [_currencyFormatter()],
-                                outLineInputBorderColorOnFocused:
-                                    Constants.primary,
-                                textEditingController:
-                                    _donationAmountController,
-                                errorText: donationViewModels.donorAmountError,
-                              ),
-                              const SizedBox(height: 20),
                               BuildElevatedButton(
-                                onPressed: _submitForm,
+                                onPressed: () {
+                                  try {
+                                    _submitForm();
+                                  } catch (e, stackTrace) {
+                                    print("🚨 Hata: $e");
+                                    print(stackTrace);
+                                  }
+                                },
                                 buttonText: "Submit Donation",
                                 buttonColor: Constants.accent,
                                 textColor: Colors.white,
@@ -365,7 +363,12 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
             ],
           ),
         ),
-      ),
-    );
+      );
+    } catch (e, stackTrace) {
+      print("❌ Build sırasında hata oluştu: $e");
+      print("🔍 Stack Trace: $stackTrace");
+      return Center(child: Text("❌ Sayfa yüklenirken hata oluştu: $e"));
+    }
   }
+
 }

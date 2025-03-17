@@ -197,7 +197,7 @@ class HomePage extends StatelessWidget {
               // Open email client
             },
             child: const Text(
-              "📧 support@fundraisinggoalchart.com",
+              "📧 suleymansurucu95@gmail.com",
               style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w600, decoration: TextDecoration.underline),
             ),
           ),

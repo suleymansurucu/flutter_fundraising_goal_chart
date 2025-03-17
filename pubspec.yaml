@@ -49,9 +49,9 @@ dependencies:
   flutter_screenutil: ^5.9.3
   excel: ^4.0.6
   path_provider: ^2.1.5
-  html: ^0.15.0
   easy_stepper: ^0.8.5+1
   flutter_widget_from_html: ^0.16.0
+  url_launcher: ^6.3.1
 
 
 
