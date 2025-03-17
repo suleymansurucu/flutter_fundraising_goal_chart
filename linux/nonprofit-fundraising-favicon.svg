@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background shape -->
+  <rect x="2" y="2" width="60" height="60" rx="12" fill="#03A9F4" />
+  
+  <!-- Fundraising progress bar -->
+  <rect x="10" y="34" width="44" height="12" rx="6" fill="#FFFFFF" />
+  <rect x="10" y="34" width="30" height="12" rx="6" fill="#4CAF50" />
+  
+  <!-- Goal marker -->
+  <line x1="44" y1="28" x2="44" y2="52" stroke="#FFC107" stroke-width="3" stroke-linecap="round" />
+  
+  <!-- Heart symbol -->
+  <path d="M32,18 C32,18 26,12 20,12 C14,12 10,16 10,20 C10,28 20,34 32,42 C44,34 54,28 54,20 C54,16 50,12 44,12 C38,12 32,18 32,18 Z" fill="#FF5252" />
+</svg>
