@@ -26,6 +26,7 @@ class FundraisingViewModels with ChangeNotifier {
   List<String> get dropdownItems => _dropdownItems;
 
   String? get selectedValue => _selectedValue;
+  bool isLoading = false;
 
   @override
   Future<bool> createFundraising(Map<String, dynamic> fundraisingModel,
@@ -212,10 +213,10 @@ class FundraisingViewModels with ChangeNotifier {
             child: snapshot.data!.communities.length == 1
                 ? SizedBox()
                 : BuildElevatedButton(
-              paddingHorizontal: 10,
-                paddingVertical: 8,
-                buttonFontSize: 14,
-                borderRadius: 5,
+                    paddingHorizontal: 10,
+                    paddingVertical: 8,
+                    buttonFontSize: 14,
+                    borderRadius: 5,
                     onPressed: () {
                       _communityName = community.name;
                       _fundraiserTarget = community.goal;
@@ -228,7 +229,7 @@ class FundraisingViewModels with ChangeNotifier {
                     buttonText: community.name,
                     buttonColor: Colors.grey.shade100,
                     textColor: Constants.textColor,
-            ),
+                  ),
           );
         }).toList();
 
@@ -276,6 +277,7 @@ class FundraisingViewModels with ChangeNotifier {
   List<String>? _list = [];
 
   List<String>? get list => _list;
+
   set list(List<String>? newList) {
     _list = newList;
     notifyListeners(); // Değişiklik olduğunda dinleyicileri bilgilendir
@@ -288,7 +290,8 @@ class FundraisingViewModels with ChangeNotifier {
 
   String? get fundraisingID => _fundraisingID;
 
-   fetchData() async {
+  fetchData() async {
+    isLoading = true;
     var userID = userRepository.firebaseAuthService.currentUser!.uid;
 
     List<String>? fetchedList =
@@ -296,7 +299,7 @@ class FundraisingViewModels with ChangeNotifier {
 
     if (fetchedList != null && fetchedList.isNotEmpty) {
       _list = fetchedList;
-      _thisFundraising = _list![0];// Default selection
+      _thisFundraising = _list![0]; // Default selection
     }
 
     var result =
@@ -304,7 +307,7 @@ class FundraisingViewModels with ChangeNotifier {
 
     // Update the state with the fundraising ID
     _fundraisingID = result;
-
+    isLoading = false;
     notifyListeners();
   }
 
