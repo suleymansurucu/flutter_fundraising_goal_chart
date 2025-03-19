@@ -40,65 +40,26 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchDataFromViewModes();
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
   void fetchDataFromViewModes() async {
-    print("🔄 fetchDataFromViewModes() başladı...");
-
-    try {
-      final fundraisingViewModels =
-          Provider.of<FundraisingViewModels>(context, listen: false);
-
-      await fundraisingViewModels.fetchData().catchError((error) {
-        print("🔥 Firestore Hatası: $error");
-      });
-
-      print("✅ Firestore'dan veri çekildi.");
-      await Future.delayed(Duration(milliseconds: 400));
-
-      if (fundraisingViewModels.fundraisingID != null) {
-        FundraisingID = fundraisingViewModels.fundraisingID;
-        print("✅ FundraisingID: $FundraisingID");
-      } else {
-        print("⚠️ fundraisingID null!");
-      }
-
-      if (fundraisingViewModels.thisFundraising != null) {
-        thisFundraising = fundraisingViewModels.thisFundraising;
-        print("✅ thisFundraising yüklendi.");
-      } else {
-        print("⚠️ thisFundraising null!");
-      }
-
-      if (fundraisingViewModels.list != null) {
-        list = fundraisingViewModels.list!;
-        print("✅ Liste yüklendi: ${list.length} öğe.");
-      } else {
-        list = [];
-        print("⚠️ Liste boş.");
-      }
-
-      final userViewModels =
-          Provider.of<UserViewModels>(context, listen: false);
-
-      if (userViewModels.userModel != null) {
-        userID = userViewModels.userModel!.userID;
-        print("✅ Kullanıcı ID: $userID");
-      } else {
-        print("⚠️ userModel null! Kullanıcı bilgisi alınamadı.");
-      }
-    } catch (e, stackTrace) {
-      print("❌ Genel Hata: $e");
-      print("🔍 Stack Trace: $stackTrace");
-    }
+    final fundraisingViewModels =
+        Provider.of<FundraisingViewModels>(context, listen: false);
+    await fundraisingViewModels.fetchData();
+    Future.delayed(Duration(milliseconds: 400));
+    FundraisingID = fundraisingViewModels.fundraisingID;
+    thisFundraising = fundraisingViewModels.thisFundraising;
+    list = fundraisingViewModels.list ?? ['Create Fundraising'];
+    final userViewModels = Provider.of<UserViewModels>(context, listen: false);
+    userID = userViewModels.userModel!.userID;
   }
 
   String formatCurrency(double value) {
@@ -168,8 +129,9 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
 
   // 🔹 Submit Form
   Future<void> _submitForm() async {
-    double? donationAmount =
-        double.tryParse(_donationAmountController.text.replaceAll(',', ''));
+    double? donationAmount = NumberFormat.decimalPattern('en_US')
+        .parse(_donationAmountController.text)
+        .toDouble();
 
     final donationViewModels =
         Provider.of<DonationViewModels>(context, listen: false);
@@ -207,7 +169,9 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
         ).show(context);
         _donorNameController.clear();
         _donationAmountController.clear();
-      } catch (e) {}
+      } catch (e) {
+        debugPrint('Donation Entry Donate Submit${e.toString()}');
+      }
     } else {
       _formkey.currentState!.reset();
       _donorNameController.clear();
@@ -238,129 +202,182 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
           scaffoldKey: _formKeyForDonationEntry,
         ),
         drawer: BuildDrawMenu(),
-        body: Container( // Flexible'ı kaldır
-          width: double.infinity,
-          height: double.infinity,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/background2.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Column(
-            children: [
-              SizedBox(
-                width: double.infinity,
-                height: 200,
-                child: Image.asset(
-                  'assets/images/entry-donations.png',
-                  fit: BoxFit.cover,
-                ),
+        body: Center(
+          child: Container(
+            // Flexible'ı kaldır
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/background2.png'),
+                fit: BoxFit.cover,
               ),
-              Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Container(
-                    width: 400,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.shade200,
-                          spreadRadius: 3,
-                          blurRadius: 7,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Consumer2<FundraisingViewModels, DonationViewModels>(
-                      builder: (context, fundraisingViewModels, donationViewModels, widget) {
-                        return Form(
-                          key: _formkey,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: BuildTextForForm(
-                                    text: 'Select a Fundraising Event:',
+            ),
+            child: Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  height: 200,
+                  child: Image.asset(
+                    'assets/images/entry-donations.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Container(
+                      width: 400,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.shade200,
+                            spreadRadius: 3,
+                            blurRadius: 7,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child:
+                          Consumer2<FundraisingViewModels, DonationViewModels>(
+                        builder: (context, fundraisingViewModels,
+                            donationViewModels, widget) {
+                          if (fundraisingViewModels.isLoading) {
+                            return CircularProgressIndicator();
+                          }
+                          if (fundraisingViewModels.list!.isEmpty) {
+                            return Text('No fundraising events found',
+                                style: TextStyle(color: Colors.red));
+                          }
+                          return Form(
+                            key: _formkey,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: BuildTextForForm(
+                                      text: 'Select a Fundraising Event:',
+                                      textColor: Constants.textColor,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w100),
+                                ),
+                                const SizedBox(height: 4),
+                                if (list.isEmpty)
+                                  Text('No fundraising events found',
+                                      style: TextStyle(color: Colors.red)),
+                                Container(
+                                  width: 400,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: Constants.primary, width: 1.5),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      dropdownColor: Constants.background,
+                                      value:
+                                          fundraisingViewModels.thisFundraising,
+                                      onChanged: (String? newValue) {
+                                        if (newValue != null) {
+                                          fundraisingViewModels
+                                              .onFundraising(newValue);
+                                        }
+                                      },
+                                      isExpanded: true,
+                                      items: list.map((String item) {
+                                        return DropdownMenuItem<String>(
+                                          value: item,
+                                          child: Text(item),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                Align(
+                                  child: Text(
+                                    "Enter Your Donation",
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: Constants.textColor,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Divider(),
+                                const SizedBox(height: 20),
+                                BuildTextForForm(
+                                    text: 'Please Enter Donor Full Name:',
                                     textColor: Constants.textColor,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w100),
-                              ),
-                              const SizedBox(height: 4),
-                              if (list.isEmpty)
-                                Text('No fundraising events found', style: TextStyle(color: Colors.red)),
-                              Container(
-                                width: 400,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Constants.primary, width: 1.5),
-                                  borderRadius: BorderRadius.circular(12),
+                                SizedBox(height: 4),
+                                BuildTextFormField(
+                                    textEditingController: _donorNameController,
+                                    textFormFieldIcon: Icons.person,
+                                    textFormFieldIconColor: Constants.primary,
+                                    keyBoardType: TextInputType.text,
+                                    hintText: 'Donor Name',
+                                    errorText: donationViewModels.donorNameError,
+                                    outLineInputBorderColor: Constants.accent,
+                                    outLineInputBorderColorOnFocused:
+                                        Constants.primary),
+                                SizedBox(height: 20),
+                                BuildTextForForm(
+                                    text: 'Please Enter Donation Amount:',
+                                    textColor: Constants.textColor,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w100),
+                                SizedBox(height: 4),
+                                BuildTextFormField(
+                                  textEditingController:
+                                      _donationAmountController,
+                                  textFormFieldIcon: Icons.person,
+                                  textFormFieldIconColor: Constants.primary,
+                                  keyBoardType: TextInputType.number,
+                                  hintText: 'Donation Amount',
+                                  errorText: donationViewModels.donorAmountError,
+                                  outLineInputBorderColor: Constants.accent,
+                                  outLineInputBorderColorOnFocused:
+                                      Constants.primary,
+                                  inputFormatters: [_currencyFormatter()],
                                 ),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<String>(
-                                    dropdownColor: Constants.background,
-                                    value: fundraisingViewModels.thisFundraising,
-                                    onChanged: (String? newValue) {
-                                      if (newValue != null) {
-                                        fundraisingViewModels.onFundraising(newValue);
-                                      }
-                                    },
-                                    isExpanded: true,
-                                    items: list.map((String item) {
-                                      return DropdownMenuItem<String>(
-                                        value: item,
-                                        child: Text(item),
-                                      );
-                                    }).toList(),
-                                  ),
+                                SizedBox(height: 20),
+                                BuildElevatedButton(
+                                  onPressed: () {
+                                    try {
+                                      _submitForm();
+                                    } catch (e, stackTrace) {
+                                      print("🚨 Hata: $e");
+                                      print(stackTrace);
+                                    }
+                                  },
+                                  buttonText: "Submit Donation",
+                                  buttonColor: Constants.accent,
+                                  textColor: Colors.white,
+                                  borderRadius: 15,
+                                  paddingHorizontal: 50,
+                                  paddingVertical: 20,
+                                  iconColor: Colors.white,
+                                  hasShadow: true,
                                 ),
-                              ),
-                              const SizedBox(height: 20),
-                              Align(
-                                child: Text(
-                                  "Enter Your Donation",
-                                  style: TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: Constants.textColor,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              BuildElevatedButton(
-                                onPressed: () {
-                                  try {
-                                    _submitForm();
-                                  } catch (e, stackTrace) {
-                                    print("🚨 Hata: $e");
-                                    print(stackTrace);
-                                  }
-                                },
-                                buttonText: "Submit Donation",
-                                buttonColor: Constants.accent,
-                                textColor: Colors.white,
-                                borderRadius: 15,
-                                paddingHorizontal: 50,
-                                paddingVertical: 20,
-                                iconColor: Colors.white,
-                                hasShadow: true,
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
@@ -370,5 +387,4 @@ class _DonationEntryPageState extends State<DonationEntryPage> {
       return Center(child: Text("❌ Sayfa yüklenirken hata oluştu: $e"));
     }
   }
-
 }
