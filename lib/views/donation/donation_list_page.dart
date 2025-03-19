@@ -29,7 +29,6 @@ class _DonationListPageState extends State<DonationListPage> {
   String? FundraisingID;
   FundraisingModel? fundraisingModel;
   late final String userID;
-  final _scafoldKeyForDonationListPage = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldState> _scaffoldDonationListKey =
       GlobalKey<ScaffoldState>();
 
@@ -132,13 +131,11 @@ class _DonationListPageState extends State<DonationListPage> {
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButton<String>(
                                     dropdownColor: Constants.background,
-                                    value:
-                                        fundraisingViewModels.thisFundraising,
+                                    value: fundraisingViewModels.thisFundraising,
                                     onChanged: (String? newValue) {
                                       if (newValue != null) {
                                         fundraisingViewModels
                                             .onFundraising(newValue);
-
                                         // _onFundraising(newValue);
                                       }
                                     },
