@@ -4,6 +4,9 @@
 
 Flutter Fundraising Goal Chart is a comprehensive web application designed specifically for non-profit organizations to efficiently manage members and track donations. The application offers real-time donation monitoring with instant graphical representation, providing organizations with valuable insights through customizable dashboards. These dashboards can be filtered by regions, countries, donation types, amounts, and other relevant metrics.
 
+
+![flutter-fundraising-architecture.svg](docs/architecture/flutter-fundraising-architecture.svg)
+
 ## Features
 
 - **Member Management**: Complete tracking and management of organization members
