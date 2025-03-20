@@ -180,6 +180,7 @@ class FundraisingViewModels with ChangeNotifier {
   }
 
   void getFundraisingScreen(String userID, String fundraisingID) async {
+    isLoading = true;
     var snapshot = await userRepository.getFundraiser(userID, fundraisingID);
 
     var generalFundraiserTarget =
@@ -196,6 +197,7 @@ class FundraisingViewModels with ChangeNotifier {
     _communityCount = snapshot.communities.length;
     _communityName = snapshot.uniqueName;
 
+    isLoading = false;
     notifyListeners();
   }
 
