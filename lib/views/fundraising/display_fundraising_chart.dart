@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_drop_down_menu.dart';
-import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_elevated_button.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_gauge_indicator.dart';
 import 'package:flutter_fundraising_goal_chart/core/utils/constants/build_pie_chart.dart';
 import 'package:flutter_fundraising_goal_chart/models/donation_model.dart';
@@ -90,182 +89,178 @@ class _DisplayFundraisingChartState extends State<DisplayFundraisingChart> {
         Provider.of<DonationViewModels>(context);
     return Consumer<FundraisingViewModels>(
         builder: (BuildContext context, fundraisingViewModels, Widget? child) {
-      if (fundraisingViewModels == null) {
+      if (fundraisingViewModels.isLoading) {
         return Scaffold(
           backgroundColor: Colors.white,
           body: Center(
             child: CircularProgressIndicator(),
           ),
         );
-      } else {
-        return Scaffold(
-          backgroundColor: Colors.white,
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  fundraisingViewModels.slogan.toString(),
-                  style: TextStyle(
-                      fontSize: 40,
-                      color: Constants.textColor,
-                      fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Divider(
-                  color: Constants.primary,
-                  thickness: 1.0,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 10,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            children: [
-                              Text(
-                                fundraisingViewModels.communityName.toString(),
-                                style: TextStyle(
-                                  fontSize: 50.sp,
-                                  color: Constants.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
+      }
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                fundraisingViewModels.slogan.toString(),
+                style: TextStyle(
+                    fontSize: 40,
+                    color: Constants.textColor,
+                    fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                color: Constants.primary,
+                thickness: 1.0,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 10,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            Text(
+                              fundraisingViewModels.communityName.toString(),
+                              style: TextStyle(
+                                fontSize: 50.sp,
+                                color: Constants.primary,
+                                fontWeight: FontWeight.bold,
                               ),
+                            ),
+                            fundraisingViewModels.graphicType.toString() ==
+                                    GraphicTypeDropDownList.pieChart.label
+                                ? BuildPieChart(
+                                    targetProgress: donationViewModels
+                                        .targetProgress(fundraisingViewModels
+                                            .fundraiserTarget),
+                                    fundraisingTarget:
+                                        widget.fundraisingTarget ?? 0,
+                                    totalDonated:
+                                        donationViewModels.totalDonated,
+                                    realTargetProgress: donationViewModels
+                                        .showRealTargetProgress as double,
+                                  )
+                                : BuildGaugeIndicator(
+                                    fundraisingTarget: fundraisingViewModels
+                                            .fundraiserTarget ??
+                                        0,
+                                    totalDonated:
+                                        donationViewModels.totalDonated,
+                                    targetProgress: donationViewModels
+                                        .targetProgress(fundraisingViewModels
+                                            .fundraiserTarget),
+                                    realTargetProgress: donationViewModels
+                                        .showRealTargetProgress as double,
+                                  ),
 
-                              fundraisingViewModels.graphicType.toString() ==
-                                      GraphicTypeDropDownList.pieChart.label
-                                  ? BuildPieChart(
-                                      targetProgress: donationViewModels
-                                          .targetProgress(fundraisingViewModels
-                                              .fundraiserTarget),
-                                      fundraisingTarget:
-                                          widget.fundraisingTarget ?? 0,
-                                      totalDonated:
-                                          donationViewModels.totalDonated,
-                                      realTargetProgress: donationViewModels
-                                          .showRealTargetProgress as double,
-                                    )
-                                  : BuildGaugeIndicator(
-                                      fundraisingTarget: fundraisingViewModels
-                                              .fundraiserTarget ??
-                                          0,
-                                      totalDonated:
-                                          donationViewModels.totalDonated,
-                                      targetProgress: donationViewModels
-                                          .targetProgress(fundraisingViewModels
-                                              .fundraiserTarget),
-                                      realTargetProgress: donationViewModels
-                                          .showRealTargetProgress as double,
-                                    ),
-
-                              fundraisingViewModels.getCommunitiesButton(
-                                  widget.userID, widget.fundraisingID),
-                              // getCommunities(),
-                            ],
-                          ),
+                            fundraisingViewModels.getCommunitiesButton(
+                                widget.userID, widget.fundraisingID),
+                            // getCommunities(),
+                          ],
                         ),
                       ),
-                      Expanded(
-                        flex: 7,
-                        child: Padding(
-                          padding: const EdgeInsets.all(32.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: double.infinity,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 16),
-                                decoration: BoxDecoration(
-                                    color: Constants.primary,
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: const Text(
-                                  '-- Last Donors --',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold),
-                                ),
+                    ),
+                    Expanded(
+                      flex: 7,
+                      child: Padding(
+                        padding: const EdgeInsets.all(32.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              decoration: BoxDecoration(
+                                  color: Constants.primary,
+                                  borderRadius: BorderRadius.circular(8)),
+                              child: const Text(
+                                '-- Last Donors --',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold),
                               ),
-                              Consumer2<DonationViewModels,
-                                      FundraisingViewModels>(
-                                  builder: (context, donationViewModels,
-                                      fundraisingViewModels, widget) {
-                                var donations = donationViewModels.donations;
-                                if (donationViewModels.donations.isEmpty) {
-                                  return Center(
-                                      child: Text("No donations yet."));
-                                }
-                                return Expanded(
-                                  child: ListView.builder(
-                                    controller: _scrollController,
-                                    padding: EdgeInsets.all(8),
-                                    itemCount: donations.length,
-                                    itemBuilder: (context, index) {
-                                      final DonationModel donation =
-                                          donations[index];
-                                      return Card(
-                                        color: Colors.white,
-                                        elevation: 2,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8)),
-                                        child: ListTile(
-                                          leading: CircleAvatar(
-                                            backgroundColor: Constants.primary,
-                                            child: Text(
-                                              '${donations.length - index}',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                              ),
+                            ),
+                            Consumer2<DonationViewModels,
+                                    FundraisingViewModels>(
+                                builder: (context, donationViewModels,
+                                    fundraisingViewModels, widget) {
+                              var donations = donationViewModels.donations;
+                              if (donationViewModels.donations.isEmpty) {
+                                return Center(child: Text("No donations yet."));
+                              }
+                              return Expanded(
+                                child: ListView.builder(
+                                  controller: _scrollController,
+                                  padding: EdgeInsets.all(8),
+                                  itemCount: donations.length,
+                                  itemBuilder: (context, index) {
+                                    final DonationModel donation =
+                                        donations[index];
+                                    return Card(
+                                      color: Colors.white,
+                                      elevation: 2,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
+                                      child: ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundColor: Constants.primary,
+                                          child: Text(
+                                            '${donations.length - index}',
+                                            style: TextStyle(
+                                              color: Colors.white,
                                             ),
                                           ),
-                                          title: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              fundraisingViewModels
-                                                          .showDonorNames ==
-                                                      YesOrNoDropDownList
-                                                          .no.label
-                                                  ? getDonorNameWithHide(
-                                                      donation.donorName)
-                                                  : Flexible(
-                                                      child: Text(
-                                                        donation.donorName,
-                                                        style: TextStyle(
-                                                            fontSize: 40.sp,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                    ),
-                                              fundraisingViewModels
-                                                          .showDonorAmount ==
-                                                      YesOrNoDropDownList
-                                                          .yes.label
-                                                  ? getDonorAmountWithDollars(
-                                                      donation.donationAmount)
-                                                  : getDonorAmountMaskOnAmount(
-                                                      donation.donationAmount),
-                                            ],
-                                          ),
                                         ),
-                                      );
-                                    },
-                                  ),
-                                );
-                              }),
+                                        title: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            fundraisingViewModels
+                                                        .showDonorNames ==
+                                                    YesOrNoDropDownList.no.label
+                                                ? getDonorNameWithHide(
+                                                    donation.donorName)
+                                                : Flexible(
+                                                    child: Text(
+                                                      donation.donorName,
+                                                      style: TextStyle(
+                                                          fontSize: 40.sp,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                            fundraisingViewModels
+                                                        .showDonorAmount ==
+                                                    YesOrNoDropDownList
+                                                        .yes.label
+                                                ? getDonorAmountWithDollars(
+                                                    donation.donationAmount)
+                                                : getDonorAmountMaskOnAmount(
+                                                    donation.donationAmount),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            }),
 /*
                               Selector<DonationViewModels, List<DonationModel>>(
                                 selector: (_, viewModel) => viewModel.donations,
@@ -317,22 +312,21 @@ class _DisplayFundraisingChartState extends State<DisplayFundraisingChart> {
                                 },
                               ),
 */
-                            ],
-                          ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        );
-      }
+        ),
+      );
     });
   }
 
-  Future<void> getFundraisingScreen() async {
+  /*Future<void> getFundraisingScreen() async {
     final FundraisingViewModels fundraisingViewModels =
         Provider.of<FundraisingViewModels>(context, listen: false);
     var snapshot = await fundraisingViewModels.getFundraiser(
@@ -345,11 +339,12 @@ class _DisplayFundraisingChartState extends State<DisplayFundraisingChart> {
       widget.fundraisingTarget = target;
       widget.communityName = snapshot!.uniqueName;
     });
-  }
+  }*/
 
+/*
   Widget getCommunities() {
     final FundraisingViewModels fundraisingViewModels =
-    Provider.of<FundraisingViewModels>(context, listen: false);
+        Provider.of<FundraisingViewModels>(context, listen: false);
 
     return FutureBuilder<FundraisingModel?>(
       future: fundraisingViewModels.getFundraiser(
@@ -365,25 +360,27 @@ class _DisplayFundraisingChartState extends State<DisplayFundraisingChart> {
             child: snapshot.data!.communities.length == 1
                 ? SizedBox()
                 : ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey.shade100,
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 4,
-              ),
-              onPressed: () {
-                setState(() {
-                  widget.communityName = community.name;
-                  widget.fundraisingTarget = community.goal;
-                });
-              },
-              child: Text(
-                community.name,
-                style: TextStyle(color: Constants.textColor, fontSize: 16),
-              ),
-            ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey.shade100,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 4,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        widget.communityName = community.name;
+                        widget.fundraisingTarget = community.goal;
+                      });
+                    },
+                    child: Text(
+                      community.name,
+                      style:
+                          TextStyle(color: Constants.textColor, fontSize: 16),
+                    ),
+                  ),
           );
         }).toList();
 
@@ -402,8 +399,8 @@ class _DisplayFundraisingChartState extends State<DisplayFundraisingChart> {
               ),
               onPressed: () async {
                 var allTarget =
-                await fundraisingViewModels.getAllFundraiserTarget(
-                    widget.userID, widget.fundraisingID);
+                    await fundraisingViewModels.getAllFundraiserTarget(
+                        widget.userID, widget.fundraisingID);
                 setState(() {
                   widget.communityName = snapshot.data!.uniqueName;
                   widget.fundraisingTarget = allTarget;
@@ -430,7 +427,7 @@ class _DisplayFundraisingChartState extends State<DisplayFundraisingChart> {
       },
     );
   }
-
+*/
 
   Widget getDonorNameWithHide(String donorName) {
     String? maskOnDonorName;
