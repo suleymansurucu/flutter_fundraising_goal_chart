@@ -130,7 +130,7 @@ class _BuildDrawMenuState extends State<BuildDrawMenu> {
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Center(
         child: Text(
-          '© 2025 Fundraising App. All Rights Reserved.',
+          '© 2025 Charity Fundraising Goal Tracker v 0.0.1.', textAlign: TextAlign.center,
           style: TextStyle(fontSize: 12, color: Colors.grey[600]),
         ),
       ),
