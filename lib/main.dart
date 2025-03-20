@@ -22,7 +22,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => UserViewModels()),
         ChangeNotifierProvider(create: (_) => FundraisingViewModels()),
         ChangeNotifierProvider(create: (_) => DonationViewModels()),
-        ChangeNotifierProvider(create: (_)=>FundraisingPageViewModels()),
+        ChangeNotifierProvider(create: (_) => FundraisingPageViewModels()),
       ],
       child: const MyApp(),
     ),
