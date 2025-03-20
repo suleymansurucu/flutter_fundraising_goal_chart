@@ -103,7 +103,7 @@ class ContactUs extends StatelessWidget {
     final Uri mail = Uri(
       scheme: 'mailto',
       path: email,
-      query: 'subject=Let\'s Collaborate&body=Hi Suleyman,',
+      query: 'subject=Let\'s Collaborate -from charity progress-&body=Hi Suleyman,',
     );
 
     if (await canLaunchUrl(mail)) {
