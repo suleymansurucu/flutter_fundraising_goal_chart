@@ -20,8 +20,8 @@ class AllFundraisingShowList extends StatefulWidget {
 }
 
 class _AllFundraisingShowListState extends State<AllFundraisingShowList> {
-
-  final GlobalKey<ScaffoldState> _scafoldFundraisingShowList = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scafoldFundraisingShowList =
+      GlobalKey<ScaffoldState>();
   late Future<List<FundraisingModel>> _future;
   late final String userID;
 
@@ -41,6 +41,7 @@ class _AllFundraisingShowListState extends State<AllFundraisingShowList> {
 
   @override
   Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       key: _scafoldFundraisingShowList,
       appBar: CustomAppBar(
@@ -48,11 +49,10 @@ class _AllFundraisingShowListState extends State<AllFundraisingShowList> {
         scaffoldKey: _scafoldFundraisingShowList,
       ),
       drawer: BuildDrawMenu(),
-
       body: SafeArea(
         child: Center(
           child: Container(
-            width: 2000.w,
+            width: 2500.w,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -94,7 +94,7 @@ class _AllFundraisingShowListState extends State<AllFundraisingShowList> {
                       }
                       final fundraisingList = snapshot.data!;
                       return ListView.builder(
-                        // shrinkWrap: true,
+                        shrinkWrap: true,
                         // physics: NeverScrollableScrollPhysics(),
                         // scrollDirection: Axis.horizontal,
                         // primary: false,
@@ -117,114 +117,13 @@ class _AllFundraisingShowListState extends State<AllFundraisingShowList> {
                                     backgroundColor: Constants.accent,
                                     child: Text(
                                       (index + 1).toString(),
-                                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
                                     )),
-                                title: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              fundraiser.uniqueName,
-                                              style: TextStyle(
-                                                fontSize: 34.w,
-                                                fontWeight: FontWeight.w300,
-                                                color: Constants.textColor,
-                                              ),
-                                            ),
-                                          ),
-                                          Spacer(),
-                                          BuildElevatedButton(
-                                            onPressed: () {
-                                              final fundraisingID =
-                                                  fundraiser.fundraisingID;
-                                              context.go(
-                                                  '/display-chart/$fundraisingID/$userID');
-                                            },
-                                            buttonText:
-                                                'Go to Display Chart Page',
-                                            buttonColor: Constants.primary,
-                                            textColor: Colors.white,
-                                            paddingHorizontal: 20,
-                                            buttonFontSize: 30.w,
-                                          ),
-                                          SizedBox(width: 5),
-                                          BuildElevatedButton(
-                                            onPressed: () {
-                                              final fundraisingID =
-                                                  fundraiser.fundraisingID;
-                                              context.go(
-                                                  '/update-display-chart/$fundraisingID/$userID');
-                                            },
-                                            buttonText: 'Update',
-                                            buttonColor: Colors.green,
-                                            textColor: Colors.white,
-                                            paddingHorizontal: 20,
-                                            buttonFontSize: 30.w,
-                                          ),
-                                          SizedBox(width: 5),
-                                          BuildElevatedButton(
-                                            buttonFontSize: 30.w,
-                                            paddingHorizontal: 20,
-                                            onPressed: () {
-                                              final fundraisingID =
-                                                  fundraiser.fundraisingID;
-                                              showDialog(
-                                                  context: context,
-                                                  builder: (BuildContext
-                                                          buildcontext) =>
-                                                      AlertDialog(
-                                                        title: const Text(
-                                                            'Are You Sure For Delete Fundraising Chart Page'),
-                                                        content: Text(
-                                                            'You are deleting => ${fundraiser.uniqueName}'),
-                                                        actions: [
-                                                          TextButton(
-                                                            onPressed: () {
-                                                              Navigator.pop(
-                                                                  context);
-                                                            },
-                                                            child: const Text(
-                                                              'Cancel',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .grey),
-                                                            ),
-                                                          ),
-                                                          TextButton(
-                                                            onPressed: () {
-                                                              _deleteFundraising(
-                                                                  userID,
-                                                                  fundraisingID!);
-                                                              _future =
-                                                                  getFundraisingData(
-                                                                      userID);
-                                                              setState(() {});
-                                                              Navigator.pop(
-                                                                  context);
-                                                              context.go(RouteNames
-                                                                  .allFundraisingShowList);
-                                                            },
-                                                            child: const Text(
-                                                              'Delete',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .red),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                        // icon: Icon(Icons.delete, color: Constants.highlight,),
-                                                        backgroundColor:
-                                                            Constants
-                                                                .background,
-                                                        elevation: 10,
-                                                        // titleTextStyle: TextStyle(color: Constants.primary),
-                                                      ));
-                                            },
-                                            buttonText: 'Delete',
-                                            buttonColor: Colors.redAccent,
-                                            textColor: Colors.white,
-                                          ),
-                                        ],
-                                      )
+                                title: screenWidth > 750
+                                    ? _rowTitle(fundraiser)
+                                    : _columnTitle(fundraiser),
                               ),
                             ),
                           );
@@ -254,5 +153,187 @@ class _AllFundraisingShowListState extends State<AllFundraisingShowList> {
         Provider.of<FundraisingViewModels>(context, listen: false);
     fundraisingViewModels.userRepository
         .deleteFundraising(userID, fundraisingID);
+  }
+
+  _rowTitle(FundraisingModel fundraiser) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            fundraiser.uniqueName,
+            style: TextStyle(
+              fontSize: 40.w,
+              fontWeight: FontWeight.w500,
+              color: Constants.textColor,
+            ),
+          ),
+        ),
+        Spacer(),
+        BuildElevatedButton(
+          onPressed: () {
+            final fundraisingID = fundraiser.fundraisingID;
+            context.go('/display-chart/$fundraisingID/$userID');
+          },
+          buttonText: 'Go to Display Chart Page',
+          buttonColor: Constants.primary,
+          textColor: Colors.white,
+          paddingHorizontal: 20,
+          buttonFontSize: 30.w,
+        ),
+        SizedBox(width: 5),
+        BuildElevatedButton(
+          onPressed: () {
+            final fundraisingID = fundraiser.fundraisingID;
+            context.go('/update-display-chart/$fundraisingID/$userID');
+          },
+          buttonText: 'Update',
+          buttonColor: Colors.green,
+          textColor: Colors.white,
+          paddingHorizontal: 20,
+          buttonFontSize: 30.w,
+        ),
+        SizedBox(width: 5),
+        BuildElevatedButton(
+          buttonFontSize: 30.w,
+          paddingHorizontal: 20,
+          onPressed: () {
+            final fundraisingID = fundraiser.fundraisingID;
+            showDialog(
+                context: context,
+                builder: (BuildContext buildcontext) => AlertDialog(
+                      title: const Text(
+                          'Are You Sure For Delete Fundraising Chart Page'),
+                      content:
+                          Text('You are deleting => ${fundraiser.uniqueName}'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            _deleteFundraising(userID, fundraisingID!);
+                            _future = getFundraisingData(userID);
+                            setState(() {});
+                            Navigator.pop(context);
+                            context.go(RouteNames.allFundraisingShowList);
+                          },
+                          child: const Text(
+                            'Delete',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                      // icon: Icon(Icons.delete, color: Constants.highlight,),
+                      backgroundColor: Constants.background,
+                      elevation: 10,
+                      // titleTextStyle: TextStyle(color: Constants.primary),
+                    ));
+          },
+          buttonText: 'Delete',
+          buttonColor: Colors.redAccent,
+          textColor: Colors.white,
+        ),
+      ],
+    );
+  }
+
+  Widget _columnTitle(FundraisingModel fundraiser) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start, // Daha iyi hizalama
+      children: [
+        SizedBox(
+          width: double.infinity, // Genişliği belirle
+          child: Text(
+            fundraiser.uniqueName,
+            style: TextStyle(
+              fontSize: 40.w,
+              fontWeight: FontWeight.w500,
+              color: Constants.textColor,
+            ),
+          ),
+        ),
+        SizedBox(height: 10),
+        Wrap(
+          spacing: 5, // Butonlar arasında boşluk bırakır
+          runSpacing: 5, // Yeni satıra geçtiğinde boşluk bırakır
+          children: [
+            BuildElevatedButton(
+              onPressed: () {
+                final fundraisingID = fundraiser.fundraisingID;
+                context.go('/display-chart/$fundraisingID/$userID');
+              },
+              buttonText: 'Go to Display Chart Page',
+              buttonColor: Constants.primary,
+              textColor: Colors.white,
+              paddingHorizontal: 20,
+              buttonFontSize: 30.w,
+            ),
+            BuildElevatedButton(
+              onPressed: () {
+                final fundraisingID = fundraiser.fundraisingID;
+                context.go('/update-display-chart/$fundraisingID/$userID');
+              },
+              buttonText: 'Update',
+              buttonColor: Colors.green,
+              textColor: Colors.white,
+              paddingHorizontal: 20,
+              buttonFontSize: 30.w,
+            ),
+            BuildElevatedButton(
+              buttonFontSize: 30.w,
+              paddingHorizontal: 20,
+              onPressed: () {
+                final fundraisingID = fundraiser.fundraisingID;
+                showDialog(
+                    context: context,
+                    builder: (BuildContext buildcontext) => AlertDialog(
+                      title: const Text(
+                          'Are You Sure For Delete Fundraising Chart Page'),
+                      content:
+                      Text('You are deleting => ${fundraiser.uniqueName}'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            _deleteFundraising(userID, fundraisingID!);
+                            _future = getFundraisingData(userID);
+                            setState(() {});
+                            Navigator.pop(context);
+                            context.go(RouteNames.allFundraisingShowList);
+                          },
+                          child: const Text(
+                            'Delete',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                      // icon: Icon(Icons.delete, color: Constants.highlight,),
+                      backgroundColor: Constants.background,
+                      elevation: 10,
+                      // titleTextStyle: TextStyle(color: Constants.primary),
+                    ));
+              },
+              buttonText: 'Delete',
+              buttonColor: Colors.redAccent,
+              textColor: Colors.white,
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }
