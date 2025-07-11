@@ -7,6 +7,8 @@ Flutter Fundraising Goal Chart is a comprehensive web application designed speci
 
 ![flutter-fundraising-architecture.svg](docs/architecture/flutter-fundraising-architecture.svg)
 
+![project-video](docs/architecture/project-video.gif)
+
 ## Features
 
 - **Member Management**: Complete tracking and management of organization members
