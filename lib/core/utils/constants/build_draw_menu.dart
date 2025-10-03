@@ -21,9 +21,10 @@ class _BuildDrawMenuState extends State<BuildDrawMenu> {
       backgroundColor: Constants.background,
       child: Consumer<UserViewModels>(
         builder: (context, userViewModel, child) {
-
-          _getFullName(context);
-          debugPrint('username : $fullName');
+          // Only call _getFullName if we don't have the name yet
+          if (userViewModel.userModel != null && fullName == "Guest") {
+            _getFullName(context);
+          }
 
           return Column(
             children: [
@@ -42,15 +43,15 @@ class _BuildDrawMenuState extends State<BuildDrawMenu> {
     return Container(
       height: 200,
       width: double.infinity,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Colors.deepPurple.shade700,
-            Colors.indigo.shade500,
-            Colors.blue.shade400,
-          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF6366F1),
+            Color(0xFF8B5CF6),
+            Color(0xFFA855F7),
+          ],
         ),
       ),
       child: DrawerHeader(
@@ -61,18 +62,35 @@ class _BuildDrawMenuState extends State<BuildDrawMenu> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const CircleAvatar(
-              radius: 40,
-              backgroundColor: Colors.white,
-              child: Icon(Icons.account_circle, color: Colors.deepPurple, size: 60),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white.withOpacity(0.3)),
+              ),
+              child: const Icon(
+                Icons.volunteer_activism,
+                color: Colors.white,
+                size: 40,
+              ),
             ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 16),
             Text(
-              fullName.isNotEmpty ? 'Hello, $fullName!' : 'Welcome to Fundraising App',
+              fullName.isNotEmpty ? 'Hello, $fullName!' : 'Welcome!',
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              fullName.isNotEmpty ? 'Ready to track your progress?' : 'Sign in to get started',
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 14,
               ),
               textAlign: TextAlign.center,
             ),
@@ -83,44 +101,115 @@ class _BuildDrawMenuState extends State<BuildDrawMenu> {
   }
 
   Widget _buildMenuItems(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.zero,
-      children: [
-        _menuItem(Icons.home, 'Home', () => context.go(RouteNames.home)),
-        _menuItem(Icons.settings, 'About Us', () => context.go(RouteNames.aboutUs)),
-        _buildExpandableMenu(context),
-        _menuItem(Icons.person, 'Edit Profile', () => context.go(RouteNames.userProfile)),
-        _menuItem(Icons.mail, 'Contact Us', () => context.go(RouteNames.contactUs)),
-      ],
+    return Consumer<UserViewModels>(
+      builder: (context, userViewModel, child) {
+        final isAuthenticated = userViewModel.userModel != null;
+        
+        return ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            _menuItem(Icons.home, 'Home', () => context.go(RouteNames.home)),
+            _menuItem(Icons.info_outline, 'About Us', () => context.go(RouteNames.aboutUs)),
+            if (isAuthenticated) ...[
+              _buildExpandableMenu(context),
+              _menuItem(Icons.person, 'Edit Profile', () => context.go(RouteNames.userProfile)),
+            ],
+            _menuItem(Icons.mail, 'Contact Us', () => context.go(RouteNames.contactUs)),
+          ],
+        );
+      },
     );
   }
 
   Widget _buildExpandableMenu(BuildContext context) {
-    return ExpansionTile(
-      title: const Text('Fundraising Tools', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-      leading: const Icon(Icons.volunteer_activism, color: Colors.deepPurple),
-      children: [
-        _menuItem(Icons.add_chart, 'Create New Fundraising', () => context.go(RouteNames.fundraisingSetup)),
-        _menuItem(Icons.history, 'Previous Fundraising Charts', () => context.go(RouteNames.allFundraisingShowList)),
-        _menuItem(Icons.monetization_on, 'Enter Donation', () => context.go(RouteNames.entryDonation)),
-        _menuItem(Icons.list, 'Donation List', () => context.go(RouteNames.donationList)),
-      ],
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFF6366F1).withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF6366F1).withOpacity(0.1)),
+      ),
+      child: ExpansionTile(
+        title: const Text(
+          'Fundraising Tools',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1E293B),
+          ),
+        ),
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF6366F1).withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Icon(
+            Icons.volunteer_activism,
+            color: Color(0xFF6366F1),
+            size: 20,
+          ),
+        ),
+        children: [
+          _menuItem(Icons.add_chart, 'Create New Fundraising', () => context.go(RouteNames.fundraisingSetup)),
+          _menuItem(Icons.history, 'My Fundraising Charts', () => context.go(RouteNames.allFundraisingShowList)),
+          _menuItem(Icons.monetization_on, 'Enter Donation', () => context.go(RouteNames.entryDonation)),
+          _menuItem(Icons.list, 'Donation List', () => context.go(RouteNames.donationList)),
+        ],
+      ),
     );
   }
 
   Widget _buildFooter(BuildContext context, bool isLoggedIn) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: BoxDecoration(
+        color: isLoggedIn 
+            ? Colors.red.withOpacity(0.05)
+            : const Color(0xFF10B981).withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isLoggedIn 
+              ? Colors.red.withOpacity(0.1)
+              : const Color(0xFF10B981).withOpacity(0.1),
+        ),
+      ),
       child: ListTile(
-        leading: const Icon(Icons.logout, color: Colors.redAccent),
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isLoggedIn 
+                ? Colors.red.withOpacity(0.1)
+                : const Color(0xFF10B981).withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            isLoggedIn ? Icons.logout : Icons.login,
+            color: isLoggedIn ? Colors.red : const Color(0xFF10B981),
+            size: 18,
+          ),
+        ),
         title: Text(
           isLoggedIn ? 'Logout' : 'Sign In',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: isLoggedIn ? Colors.red : const Color(0xFF10B981),
+          ),
         ),
         onTap: () {
           Navigator.pop(context);
-          isLoggedIn ? context.go(RouteNames.home) : context.go(RouteNames.singIn);
+          if (isLoggedIn) {
+            // Handle logout
+            final userViewModel = Provider.of<UserViewModels>(context, listen: false);
+            userViewModel.signOutWithEmailAndPassword(userViewModel.userModel!.userID);
+            context.go(RouteNames.home);
+          } else {
+            context.go(RouteNames.singIn);
+          }
         },
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
     );
   }
@@ -138,23 +227,54 @@ class _BuildDrawMenuState extends State<BuildDrawMenu> {
   }
 
   Widget _menuItem(IconData icon, String title, VoidCallback onTap) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.deepPurple.shade700),
-      title: Text(
-        title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
       ),
-      onTap: onTap,
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF6366F1).withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: const Color(0xFF6366F1),
+            size: 18,
+          ),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF1E293B),
+          ),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+          onTap();
+        },
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        hoverColor: const Color(0xFF6366F1).withOpacity(0.05),
+      ),
     );
   }
 
   void _getFullName(BuildContext context) async {
     final userViewModels = Provider.of<UserViewModels>(context, listen: false);
-    final _userviewModel = await userViewModels.getUserData(userViewModels.userModel!.userID);
-    debugPrint(
-        'getfullNamedeyiz biz bu userview model${userViewModels.fullName}');
-    Future.delayed(Duration(milliseconds: 400));
-    fullName = _userviewModel!.fullName!;
-    debugPrint('method icerisinde $fullName');
+    if (userViewModels.userModel != null && userViewModels.fullName == null) {
+      final _userviewModel = await userViewModels.getUserData(userViewModels.userModel!.userID);
+      if (_userviewModel?.fullName != null) {
+        fullName = _userviewModel!.fullName!;
+        setState(() {}); // Update UI only when we have the name
+      }
+    } else if (userViewModels.fullName != null) {
+      fullName = userViewModels.fullName!;
+    }
   }
 }
