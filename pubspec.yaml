@@ -27,6 +27,8 @@ dependencies:
   easy_stepper: ^0.8.5+1
   flutter_widget_from_html: ^0.16.0
   url_launcher: ^6.3.1
+  video_player: ^2.9.2
+  flutter_seo: ^0.1.0
 
 dev_dependencies:
   flutter_test:
@@ -38,3 +40,4 @@ flutter:
   uses-material-design: true
   assets:
    - assets/images/
+   - assets/videos/
